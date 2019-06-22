@@ -39,6 +39,8 @@
   
   
   
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.css">
+  
 </head>
 
 
@@ -50,7 +52,7 @@
       
       <div class="profile-block text-center">
         <a id="avatar" href="https://www.sugen.cn" target="_blank">
-          <img class="img-circle img-rotate" src="https://www.gravatar.com/avatar/397ff21d4b5548124c94ad17797b7979?s=128" width="200" height="200">
+          <img class="img-circle img-rotate" src="/images/avatar.png" width="200" height="200">
         </a>
         <h2 id="name" class="hidden-xs hidden-sm">似水年华</h2>
         <h3 id="title" class="hidden-xs hidden-sm hidden-md">Those years, those things</h3>
@@ -134,7 +136,7 @@
         
         
         <li class="menu-item menu-item-links">
-          <a href="https://mwi.com.cn">
+          <a href="/links">
             
             <i class="icon icon-friendship"></i>
             
@@ -190,12 +192,33 @@
 
     
       
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/github/">github</a><span class="category-list-count">2</span></li></ul>
+    </div>
+  </div>
+
 
     
       
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">2</span></li></ul>
+    </div>
+  </div>
+
 
     
       
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/github/" style="font-size: 13px;">github</a> <a href="/tags/hexo/" style="font-size: 13px;">hexo</a>
+    </div>
+  </div>
+
     
       
   <div class="widget">
@@ -217,13 +240,13 @@
             
             <div class="item-inner">
               <p class="item-category">
-                
+                <a class="category-link" href="/categories/github/">github</a>
               </p>
               <p class="item-title">
-                <a href="/2019/06/22/hexoblog/" class="title">hexoblog</a>
+                <a href="/article-2019062211.html" class="title">Hello World</a>
               </p>
               <p class="item-date">
-                <time datetime="2019-06-22T14:26:00.000Z" itemprop="datePublished">2019-06-22</time>
+                <time datetime="2019-06-21T16:00:00.000Z" itemprop="datePublished">2019-06-22</time>
               </p>
             </div>
           </li>
@@ -232,13 +255,13 @@
             
             <div class="item-inner">
               <p class="item-category">
-                
+                <a class="category-link" href="/categories/github/">github</a>
               </p>
               <p class="item-title">
-                <a href="/2019/06/22/hello-world/" class="title">Hello World</a>
+                <a href="/article-20190622.html" class="title">多个Hexo博客网站github发布</a>
               </p>
               <p class="item-date">
-                <time datetime="2019-06-22T13:21:32.579Z" itemprop="datePublished">2019-06-22</time>
+                <time datetime="2019-06-21T16:00:00.000Z" itemprop="datePublished">2019-06-22</time>
               </p>
             </div>
           </li>
@@ -257,16 +280,53 @@
   <article class="article article-categories article-type-list" itemscope="">
     <header class="article-header">
       <h1 itemprop="name" class="hidden-xs">分类</h1>
-      <p class="text-muted hidden-xs">共 0 个分类</p>
+      <p class="text-muted hidden-xs">共 1 个分类</p>
       <nav role="navigation" id="nav-main" class="okayNav">
         <ul>
           <li><a href="/categories">All</a></li>
+          
+          <li><a href="/categories/github/">github</a></li>
           
         </ul>
       </nav>
     </header>
     <!-- /header -->
     <div class="article-body">
+      
+      <div class="panel panel-default b-no">
+        <div class="panel-heading" role="tab">
+          <h3 class="panel-title">
+            <a data-toggle="collapse" href="#collapsegithub" aria-expanded="true">
+              <i class="icon icon-folder text-active"></i><i class="icon icon-folder-open text"></i>
+              github
+            </a>
+            <small class="text-muted">(Total 2 articles)</small>
+          </h3>
+        </div>
+        <div id="collapsegithub" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headinggithub">
+          <div class="panel-body">
+            <div class="collection">
+              
+                
+<a href="/article-2019062211.html" class="collection-item" target="_blank" itemprop="url">
+  <time datetime="2019-06-21T16:00:00.000Z" itemprop="datePublished">2019-06-22</time>
+  <span>&nbsp;&nbsp;&nbsp;</span> Hello World
+</a>
+
+
+              
+                
+<a href="/article-20190622.html" class="collection-item" target="_blank" itemprop="url">
+  <time datetime="2019-06-21T16:00:00.000Z" itemprop="datePublished">2019-06-22</time>
+  <span>&nbsp;&nbsp;&nbsp;</span> 多个Hexo博客网站github发布
+</a>
+
+
+              
+            </div>
+          </div>
+        </div>
+      </div>
       
     </div>
   </article>
