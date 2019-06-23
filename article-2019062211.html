@@ -17,19 +17,26 @@
   <meta http-equiv="window-target" content="_top">
   
   
-  <title>Hello World | 似水年华</title>
-  <meta name="description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick">
-<meta name="keywords" content="hexo,github">
+  <title>怎么将SSH密钥添加到GitHub帐户 | 似水年华</title>
+  <meta name="description" content="将现有SSH密钥添加到GITHUB1、将SSH密钥复制到剪贴板。12$ pbcopy &amp;lt; ~/.ssh/id_rsa.pub# Copies the contents of the id_rsa.pub file to your clipboard  2、在任意页面的右上角，单击您的个人资料照片，然后单击“设置”。 3、在用户设置侧栏中，单击SSH和GPG密钥。 4、单击“新建SSH密钥”或">
+<meta name="keywords" content="ssh,github">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Hello World">
+<meta property="og:title" content="怎么将SSH密钥添加到GitHub帐户">
 <meta property="og:url" content="https://www.sugen.cn/article-2019062211.html">
 <meta property="og:site_name" content="似水年华">
-<meta property="og:description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick">
+<meta property="og:description" content="将现有SSH密钥添加到GITHUB1、将SSH密钥复制到剪贴板。12$ pbcopy &amp;lt; ~/.ssh/id_rsa.pub# Copies the contents of the id_rsa.pub file to your clipboard  2、在任意页面的右上角，单击您的个人资料照片，然后单击“设置”。 3、在用户设置侧栏中，单击SSH和GPG密钥。 4、单击“新建SSH密钥”或">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-06-22T22:14:42.481Z">
+<meta property="og:image" content="https://www.sugen.cn/images/github/userbar-account-settings.png">
+<meta property="og:image" content="https://www.sugen.cn/images/github/settings-sidebar-ssh-keys.png">
+<meta property="og:image" content="https://www.sugen.cn/images/github/ssh-add-ssh-key.png">
+<meta property="og:image" content="https://www.sugen.cn/images/github/ssh-key-paste.png">
+<meta property="og:image" content="https://www.sugen.cn/images/github/ssh-add-key.png">
+<meta property="og:image" content="https://www.sugen.cn/images/github/sudo_mode_popup.png">
+<meta property="og:updated_time" content="2019-06-23T03:19:15.769Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hello World">
-<meta name="twitter:description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick">
+<meta name="twitter:title" content="怎么将SSH密钥添加到GitHub帐户">
+<meta name="twitter:description" content="将现有SSH密钥添加到GITHUB1、将SSH密钥复制到剪贴板。12$ pbcopy &amp;lt; ~/.ssh/id_rsa.pub# Copies the contents of the id_rsa.pub file to your clipboard  2、在任意页面的右上角，单击您的个人资料照片，然后单击“设置”。 3、在用户设置侧栏中，单击SSH和GPG密钥。 4、单击“新建SSH密钥”或">
+<meta name="twitter:image" content="https://www.sugen.cn/images/github/userbar-account-settings.png">
   <!-- Canonical links -->
   <link rel="canonical" href="https://www.sugen.cn/article-2019062211.html">
   
@@ -199,7 +206,7 @@
   <div class="widget">
     <h3 class="widget-title">分类</h3>
     <div class="widget-body">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/github/">github</a><span class="category-list-count">2</span></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/github/">github</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/github/ssh/">ssh</a><span class="category-list-count">1</span></li></ul></li></ul>
     </div>
   </div>
 
@@ -209,7 +216,7 @@
   <div class="widget">
     <h3 class="widget-title">标签</h3>
     <div class="widget-body">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">2</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssh/">ssh</a><span class="tag-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -219,7 +226,7 @@
   <div class="widget">
     <h3 class="widget-title">标签云</h3>
     <div class="widget-body tagcloud">
-      <a href="/tags/github/" style="font-size: 13px;">github</a> <a href="/tags/hexo/" style="font-size: 13px;">hexo</a>
+      <a href="/tags/github/" style="font-size: 14px;">github</a> <a href="/tags/hexo/" style="font-size: 13px;">hexo</a> <a href="/tags/ssh/" style="font-size: 13px;">ssh</a>
     </div>
   </div>
 
@@ -244,10 +251,10 @@
             
             <div class="item-inner">
               <p class="item-category">
-                <a class="category-link" href="/categories/github/">github</a>
+                <a class="category-link" href="/categories/github/">github</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/github/ssh/">ssh</a>
               </p>
               <p class="item-title">
-                <a href="/article-2019062211.html" class="title">Hello World</a>
+                <a href="/article-2019062211.html" class="title">怎么将SSH密钥添加到GitHub帐户</a>
               </p>
               <p class="item-date">
                 <time datetime="2019-06-21T16:00:00.000Z" itemprop="datePublished">2019-06-22</time>
@@ -283,14 +290,14 @@
   
 <main class="main" role="main">
   <div class="content">
-  <article id="post-hello-world" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+  <article id="post-github" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
     
     <div class="article-header">
       
         
   
     <h1 class="article-title" itemprop="name">
-      Hello World
+      怎么将SSH密钥添加到GitHub帐户
     </h1>
   
 
@@ -305,13 +312,13 @@
         
   <span class="article-category">
     <i class="icon icon-folder"></i>
-    <a class="article-category-link" href="/categories/github/">github</a>
+    <a class="article-category-link" href="/categories/github/">github</a>►<a class="article-category-link" href="/categories/github/ssh/">ssh</a>
   </span>
 
         
   <span class="article-tag">
     <i class="icon icon-tags"></i>
-	<a class="article-tag-link" href="/tags/github/">github</a>, <a class="article-tag-link" href="/tags/hexo/">hexo</a>
+	<a class="article-tag-link" href="/tags/github/">github</a>, <a class="article-tag-link" href="/tags/ssh/">ssh</a>
   </span>
 
 
@@ -327,7 +334,7 @@
         <span class="post-comment"><i class="icon icon-comment"></i> <a href="/article-2019062211.html#comments" class="article-comment-link">评论</a></span>
         
 	
-		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 73(字)</span>
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 168(字)</span>
 	
 	
 		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 1(分)</span>
@@ -337,19 +344,17 @@
     </div>
     <div class="article-entry marked-body" itemprop="articleBody">
       
-        <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
+        <h2 id="将现有SSH密钥添加到GITHUB"><a href="#将现有SSH密钥添加到GITHUB" class="headerlink" title="将现有SSH密钥添加到GITHUB"></a>将现有SSH密钥添加到GITHUB</h2><h3 id="1、将SSH密钥复制到剪贴板。"><a href="#1、将SSH密钥复制到剪贴板。" class="headerlink" title="1、将SSH密钥复制到剪贴板。"></a>1、将SSH密钥复制到剪贴板。</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ pbcopy &lt; ~/.ssh/id_rsa.pub</span><br><span class="line"><span class="comment"># Copies the contents of the id_rsa.pub file to your clipboard</span></span><br></pre></td></tr></table></figure>
 
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>
+<h3 id="2、在任意页面的右上角，单击您的个人资料照片，然后单击“设置”。"><a href="#2、在任意页面的右上角，单击您的个人资料照片，然后单击“设置”。" class="headerlink" title="2、在任意页面的右上角，单击您的个人资料照片，然后单击“设置”。"></a>2、在任意页面的右上角，单击您的个人资料照片，然后单击“设置”。</h3><p><img src="/images/github/userbar-account-settings.png" alt="设置" title="设置"></p>
+<h3 id="3、在用户设置侧栏中，单击SSH和GPG密钥。"><a href="#3、在用户设置侧栏中，单击SSH和GPG密钥。" class="headerlink" title="3、在用户设置侧栏中，单击SSH和GPG密钥。"></a>3、在用户设置侧栏中，单击SSH和GPG密钥。</h3><p><img src="/images/github/settings-sidebar-ssh-keys.png" alt="设置SSH-KEY" title="设置SSH-KEY"></p>
+<h3 id="4、单击“新建SSH密钥”或“添加SSH密钥”。"><a href="#4、单击“新建SSH密钥”或“添加SSH密钥”。" class="headerlink" title="4、单击“新建SSH密钥”或“添加SSH密钥”。"></a>4、单击“新建SSH密钥”或“添加SSH密钥”。</h3><p><img src="/images/github/ssh-add-ssh-key.png" alt="ADD-SSH-KEY" title="ADD-SSH-KEY"></p>
+<h3 id="5、在“标题”字段中，为新密钥添加描述性标签。"><a href="#5、在“标题”字段中，为新密钥添加描述性标签。" class="headerlink" title="5、在“标题”字段中，为新密钥添加描述性标签。"></a>5、在“标题”字段中，为新密钥添加描述性标签。</h3><blockquote>
+<p>例如，如果您使用的是个人Mac，则可以将此键称为“Personal MacBook Air”。</p>
+</blockquote>
+<h3 id="6、将您的密钥粘贴到“密钥”字段中。"><a href="#6、将您的密钥粘贴到“密钥”字段中。" class="headerlink" title="6、将您的密钥粘贴到“密钥”字段中。"></a>6、将您的密钥粘贴到“密钥”字段中。</h3><p><img src="/images/github/ssh-key-paste.png" alt="粘贴密钥" title="粘贴密钥"></p>
+<h3 id="7、单击“添加SSH密钥”。"><a href="#7、单击“添加SSH密钥”。" class="headerlink" title="7、单击“添加SSH密钥”。"></a>7、单击“添加SSH密钥”。</h3><p><img src="/images/github/ssh-add-key.png" alt="添加SSH密钥" title="添加SSH密钥"></p>
+<h3 id="8、如果出现提示，确认你的GitHub密码。"><a href="#8、如果出现提示，确认你的GitHub密码。" class="headerlink" title="8、如果出现提示，确认你的GitHub密码。"></a>8、如果出现提示，确认你的GitHub密码。</h3><p><img src="/images/github/sudo_mode_popup.png" alt="确认GitHub密码" title="确认GitHub密码"></p>
 
       
     </div>
@@ -359,7 +364,7 @@
     
     <li class="post-copyright-link hidden-xs">
       <strong>本文链接：</strong>
-      <a href="https://www.sugen.cn/article-2019062211.html" title="Hello World" target="_blank" rel="external">https://www.sugen.cn/article-2019062211.html</a>
+      <a href="https://www.sugen.cn/article-2019062211.html" title="怎么将SSH密钥添加到GitHub帐户" target="_blank" rel="external">https://www.sugen.cn/article-2019062211.html</a>
     </li>
     
     <!-- <li class="post-copyright-license">
