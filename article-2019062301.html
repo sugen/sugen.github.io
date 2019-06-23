@@ -1,374 +1,247 @@
+
 <!DOCTYPE html>
-<html lang=zh>
-<head><meta name="generator" content="Hexo 3.9.0">
-  <meta charset="utf-8">
-  
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
-  <meta name="renderer" content="webkit">
-  <meta http-equiv="Cache-Control" content="no-transform">
-  <meta http-equiv="Cache-Control" content="no-siteapp">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="format-detection" content="telephone=no,email=no,adress=no">
-  <!-- Color theme for statusbar -->
-  <meta name="theme-color" content="#000000">
-  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
-  <meta http-equiv="window-target" content="_top">
-  
-  
-  <title>生成新的SSH密钥并将其添加到ssh-agent | 似水年华</title>
-  <meta name="description" content="123451. 检查现有SSH密钥后，可以生成用于身份验证的新SSH密钥，然后将其添加到ssh-agent。2. 如果您还没有SSH密钥，则必须生成新的SSH密钥。 如果您不确定是否已有SSH密钥，请检查现有密钥。3. 如果您不想在每次使用SSH密钥时重新输入密码，则可以将密钥添加到SSH代理，SSH代理管理您的SSH密钥并记住您的密码。  生成新的SSH密钥1. 打开终端2. 粘贴下面的文本，替">
+<html lang="zh-cn">
+    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="似水年华">
+    <title>生成新的SSH密钥并将其添加到ssh-agent - 似水年华</title>
+    <meta name="author" content="Steven Su">
+    
+        <meta name="keywords" content="ssh">
+    
+    
+        <link rel="icon" href="https://www.sugen.cn/assets/images/favicon.png">
+    
+    
+        <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
+    
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Steven Su","sameAs":[],"image":"/logo/logo.png"},"articleBody":"\n检查现有SSH密钥后，可以生成用于身份验证的新SSH密钥，然后将其添加到ssh-agent。\n\n\n\n123451. 检查现有SSH密钥后，可以生成用于身份验证的新SSH密钥，然后将其添加到ssh-agent。2. 如果您还没有SSH密钥，则必须生成新的SSH密钥。 如果您不确定是否已有SSH密钥，请检查现有密钥。3. 如果您不想在每次使用SSH密钥时重新输入密码，则可以将密钥添加到SSH代理，SSH代理管理您的SSH密钥并记住您的密码。\n\n生成新的SSH密钥1. 打开终端2. 粘贴下面的文本，替换您的GitHub电子邮件地址。1$ ssh-keygen -t rsa -b 4096 -C“your_email@example.com”\n\n这将使用提供的电子邮件作为标签创建一个新的ssh密钥。1&gt; Generating public/private rsa key pair.\n\n3. 当系统提示“输入要保存密钥的文件”时，按Enter键。这接受默认文件位置，如果不想覆盖，可以手动修改文件名。1&gt; Enter a file in which to save the key (/Users/you/.ssh/id_rsa): [Press enter]\n\n4. 在提示符下，键入安全密码(可以直接回车不设置密码)。12&gt; Enter passphrase (empty for no passphrase): [Type a passphrase]&gt; Enter same passphrase again: [Type passphrase again]\n\n将SSH密钥添加到ssh-agent121. 在将新的SSH密钥添加到ssh-agent以管理密钥之前，您应该检查现有的SSH密钥并生成新的SSH密钥。2. 将SSH密钥添加到代理时，请使用默认的macOS ssh-add命令，而不是macports，homebrew或其他外部源安装的应用程序。\n\n1. 在后台启动ssh-agent。12$ eval \"$(ssh-agent -s)\"&gt; Agent pid 59566\n\n2. 如果您使用的是macOS Sierra 10.12.2或更高版本，则需要修改〜/.ssh/config文件以自动将密钥加载到ssh-agent中并在密钥链中存储密码。1234Host *  AddKeysToAgent yes  UseKeychain yes  IdentityFile ~/.ssh/id_rsa\n\n3. 将SSH私钥添加到ssh-agent并将密码存储在密钥链中。 如果使用其他名称创建密钥，或者要添加具有不同名称的现有密钥，请将命令中的id_rsa替换为私钥文件的名称。1$ ssh-add -K ~/.ssh/id_rsa\n\n\n注意：-K选项是Apple的ssh-add标准版本，当你向ssh-agent添加ssh密钥时，它会将密码链存储在你的钥匙串中。如果你没有安装Apple的标准版本，则可能会收到错误消息。\n\n4. 将SSH密钥添加到您的GitHub帐户。(不会的看下一篇文章)","dateCreated":"2019-06-22T00:00:00+08:00","dateModified":"2019-06-23T23:05:36+08:00","datePublished":"2019-06-22T00:00:00+08:00","description":"\n检查现有SSH密钥后，可以生成用于身份验证的新SSH密钥，然后将其添加到ssh-agent。","headline":"生成新的SSH密钥并将其添加到ssh-agent","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"https://www.sugen.cn/article-2019062301.html"},"publisher":{"@type":"Organization","name":"Steven Su","sameAs":[],"image":"/logo/logo.png","logo":{"@type":"ImageObject","url":"/logo/logo.png"}},"url":"https://www.sugen.cn/article-2019062301.html","keywords":"ssh"}</script>
+    <meta name="description" content="检查现有SSH密钥后，可以生成用于身份验证的新SSH密钥，然后将其添加到ssh-agent。">
 <meta name="keywords" content="ssh">
-<meta property="og:type" content="article">
+<meta property="og:type" content="blog">
 <meta property="og:title" content="生成新的SSH密钥并将其添加到ssh-agent">
 <meta property="og:url" content="https://www.sugen.cn/article-2019062301.html">
 <meta property="og:site_name" content="似水年华">
-<meta property="og:description" content="123451. 检查现有SSH密钥后，可以生成用于身份验证的新SSH密钥，然后将其添加到ssh-agent。2. 如果您还没有SSH密钥，则必须生成新的SSH密钥。 如果您不确定是否已有SSH密钥，请检查现有密钥。3. 如果您不想在每次使用SSH密钥时重新输入密码，则可以将密钥添加到SSH代理，SSH代理管理您的SSH密钥并记住您的密码。  生成新的SSH密钥1. 打开终端2. 粘贴下面的文本，替">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-06-23T05:34:26.837Z">
+<meta property="og:description" content="检查现有SSH密钥后，可以生成用于身份验证的新SSH密钥，然后将其添加到ssh-agent。">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:updated_time" content="2019-06-23T15:05:36.209Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="生成新的SSH密钥并将其添加到ssh-agent">
-<meta name="twitter:description" content="123451. 检查现有SSH密钥后，可以生成用于身份验证的新SSH密钥，然后将其添加到ssh-agent。2. 如果您还没有SSH密钥，则必须生成新的SSH密钥。 如果您不确定是否已有SSH密钥，请检查现有密钥。3. 如果您不想在每次使用SSH密钥时重新输入密码，则可以将密钥添加到SSH代理，SSH代理管理您的SSH密钥并记住您的密码。  生成新的SSH密钥1. 打开终端2. 粘贴下面的文本，替">
-  <!-- Canonical links -->
-  <link rel="canonical" href="https://www.sugen.cn/article-2019062301.html">
-  
-    <link rel="alternate" href="/atom.xml" title="似水年华" type="application/atom+xml">
-  
-  
-    <!-- <link rel="icon" href="/favicon.ico" type="image/x-icon"> -->
-    <link rel="shortcut icon" type="image/x-icon" href="https://www.sugen.cn/favicon.png" media="screen">
-  
-  <link rel="stylesheet" href="/css/style.css">
-  
-  
-  
-  
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.css">
-  
+<meta name="twitter:description" content="检查现有SSH密钥后，可以生成用于身份验证的新SSH密钥，然后将其添加到ssh-agent。">
+    
+    
+        
+    
+    
+        <meta property="og:image" content="https://www.sugen.cn/assets/images/logo/logo.png"/>
+    
+    
+    
+    
+    <!--STYLES-->
+    <link rel="stylesheet" href="/assets/css/all.css">
+    <link rel="stylesheet" href="/assets/css/jquery.fancybox.css">
+    <link rel="stylesheet" href="/assets/css/thumbs.css">
+    <link rel="stylesheet" href="/assets/css/tranquilpeak.css">
+    <!--STYLES END-->
+    
+
+    
 </head>
 
+    <body>
+        <div id="blog">
+            <!-- Define author's picture -->
 
-<body class="main-center no-sidebar" itemscope itemtype="http://schema.org/WebPage">
-  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
-  <div class="slimContent">
-    <div class="navbar-header">
-      
-      
-      <div class="profile-block text-center">
-        <a id="avatar" href="https://www.sugen.cn" target="_blank">
-          <img class="img-circle img-rotate" src="/images/avatar.png" width="200" height="200">
+
+    
+        
+            
+        
+    
+
+<header id="header" data-behavior="2">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a class="header-title-link" href="/ ">似水年华</a>
+    </div>
+    
+        
+            <a  class="header-right-picture "
+                href="#about">
+        
+        
+            <img class="header-picture" src="/assets/images/logo/logo.png" alt="作者的图片"/>
+        
         </a>
-        <h2 id="name" class="hidden-xs hidden-sm">似水年华</h2>
-        <h3 id="title" class="hidden-xs hidden-sm hidden-md">Those years, those things</h3>
-        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Shanghai, China</small>
-      </div>
-      
-      <div class="search" id="search-form-wrap">
-
-    <form class="search-form sidebar-form">
-        <div class="input-group">
-            <input type="text" class="search-form-input form-control" placeholder="搜索" />
-            <span class="input-group-btn">
-                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
-            </span>
-        </div>
-    </form>
-    <div class="ins-search">
-  <div class="ins-search-mask"></div>
-  <div class="ins-search-container">
-    <div class="ins-input-wrapper">
-      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
-      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-    </div>
-    <div class="ins-section-wrapper">
-      <div class="ins-section-container"></div>
-    </div>
-  </div>
-</div>
-
-
-</div>
-      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-    </div>
-    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
-      <ul class="nav navbar-nav main-nav ">
-        
-        
-        <li class="menu-item menu-item-home">
-          <a href="/.">
-            
-            <i class="icon icon-home-fill"></i>
-            
-            <span class="menu-title">首页</span>
-          </a>
-        </li>
-        
-        
-        <li class="menu-item menu-item-archives">
-          <a href="/archives">
-            
-            <i class="icon icon-archives-fill"></i>
-            
-            <span class="menu-title">归档</span>
-          </a>
-        </li>
-        
-        
-        <li class="menu-item menu-item-categories">
-          <a href="/categories">
-            
-            <i class="icon icon-folder"></i>
-            
-            <span class="menu-title">分类</span>
-          </a>
-        </li>
-        
-        
-        <li class="menu-item menu-item-tags">
-          <a href="/tags">
-            
-            <i class="icon icon-tags"></i>
-            
-            <span class="menu-title">标签</span>
-          </a>
-        </li>
-        
-        
-        <li class="menu-item menu-item-links">
-          <a href="/links">
-            
-            <i class="icon icon-friendship"></i>
-            
-            <span class="menu-title">友链</span>
-          </a>
-        </li>
-        
-        
-        <li class="menu-item menu-item-about">
-          <a href="/about">
-            
-            <i class="icon icon-cup-fill"></i>
-            
-            <span class="menu-title">关于</span>
-          </a>
-        </li>
-        
-      </ul>
-      
-	
-    <ul class="social-links">
-    	
-        <li><a href="https://github.com/sugen" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
-        
-        <li><a href="http://weibo.com/sugen" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
-        
-        <li><a href="https://www.facebook.com/steven.gen.su" target="_blank" title="Facebook" data-toggle=tooltip data-placement=top><i class="icon icon-facebook"></i></a></li>
-        
-        <li><a href="https://www.behance.net/sugen" target="_blank" title="Behance" data-toggle=tooltip data-placement=top><i class="icon icon-behance"></i></a></li>
-        
-        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
-        
-    </ul>
-
-    </nav>
-  </div>
+    
 </header>
 
-  <!-- 
-    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
-  <div class="slimContent">
+            <!-- Define author's picture -->
+
+
+
+        
     
-      <div class="widget">
-    <h3 class="widget-title">公告</h3>
-    <div class="widget-body">
-        <div id="board">
-            <div class="content">
-                <p>欢迎交流与分享经验!</p>
+
+<nav id="sidebar" data-behavior="2">
+    <div class="sidebar-container">
+        
+            <div class="sidebar-profile">
+                <a href="/#about">
+                    <img class="sidebar-profile-picture" src="/assets/images/logo/logo.png" alt="作者的图片"/>
+                </a>
+                <h4 class="sidebar-profile-name">Steven Su</h4>
+                
+                    <h5 class="sidebar-profile-bio"><p>author.bio</p>
+</h5>
+                
             </div>
-        </div>
+        
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link "
+                             href="/ "
+                            
+                            title="首页"
+                        >
+                    
+                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">首页</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link "
+                             href="/all-categories"
+                            
+                            title="分类"
+                        >
+                    
+                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">分类</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link "
+                             href="/all-tags"
+                            
+                            title="标签"
+                        >
+                    
+                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">标签</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link "
+                             href="/all-archives"
+                            
+                            title="归档"
+                        >
+                    
+                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">归档</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link open-algolia-search"
+                             href="#search"
+                            
+                            title="搜索"
+                        >
+                    
+                        <i class="sidebar-button-icon fa fa-search" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">搜索</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link "
+                             href="/about"
+                            
+                            title="关于"
+                        >
+                    
+                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">关于</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link "
+                             href="/mailto"
+                            title="邮箱"
+                        >
+                    
+                        <i class="sidebar-button-icon fa fa-envelope" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">邮箱</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link "
+                             href="/atom.xml"
+                            
+                            title="RSS"
+                        >
+                    
+                        <i class="sidebar-button-icon fa fa-rss" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">RSS</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
     </div>
+</nav>
+
+            
+            <div id="main" data-behavior="2"
+                 class="
+                        hasCoverMetaIn
+                        ">
+                
+<article class="post">
+    
+    
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title">
+            生成新的SSH密钥并将其添加到ssh-agent
+        </h1>
+    
+    
 </div>
 
     
-      
-  <div class="widget">
-    <h3 class="widget-title">分类</h3>
-    <div class="widget-body">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/github/">github</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/github/ssh/">ssh</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/ssh/">ssh</a><span class="category-list-count">2</span></li></ul>
-    </div>
-  </div>
+    <div class="post-content markdown">
+        <div class="main-content-wrap">
+            <ol>
+<li>检查现有SSH密钥后，可以生成用于身份验证的新SSH密钥，然后将其添加到ssh-agent。<a id="more"></a>
 
-
-    
-      
-  <div class="widget">
-    <h3 class="widget-title">标签</h3>
-    <div class="widget-body">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssh/">ssh</a><span class="tag-list-count">3</span></li></ul>
-    </div>
-  </div>
-
-
-    
-      
-  <div class="widget">
-    <h3 class="widget-title">标签云</h3>
-    <div class="widget-body tagcloud">
-      <a href="/tags/github/" style="font-size: 13.5px;">github</a> <a href="/tags/hexo/" style="font-size: 13px;">hexo</a> <a href="/tags/ssh/" style="font-size: 14px;">ssh</a>
-    </div>
-  </div>
-
-    
-      
-  <div class="widget">
-    <h3 class="widget-title">归档</h3>
-    <div class="widget-body">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">4</span></li></ul>
-    </div>
-  </div>
-
-
-    
-      
-  <div class="widget">
-    <h3 class="widget-title">最新文章</h3>
-    <div class="widget-body">
-      <ul class="recent-post-list list-unstyled no-thumbnail">
-        
-          <li>
-            
-            <div class="item-inner">
-              <p class="item-category">
-                <a class="category-link" href="/categories/ssh/">ssh</a>
-              </p>
-              <p class="item-title">
-                <a href="/article-20190623120958.html" class="title">SSH协议远程免密登录</a>
-              </p>
-              <p class="item-date">
-                <time datetime="2019-06-23T04:09:58.000Z" itemprop="datePublished">2019-06-23</time>
-              </p>
-            </div>
-          </li>
-          
-          <li>
-            
-            <div class="item-inner">
-              <p class="item-category">
-                <a class="category-link" href="/categories/github/">github</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/github/ssh/">ssh</a>
-              </p>
-              <p class="item-title">
-                <a href="/article-2019062211.html" class="title">怎么将SSH密钥添加到GitHub帐户</a>
-              </p>
-              <p class="item-date">
-                <time datetime="2019-06-21T16:00:00.000Z" itemprop="datePublished">2019-06-22</time>
-              </p>
-            </div>
-          </li>
-          
-          <li>
-            
-            <div class="item-inner">
-              <p class="item-category">
-                <a class="category-link" href="/categories/github/">github</a>
-              </p>
-              <p class="item-title">
-                <a href="/article-20190622.html" class="title">一台电脑多个Hexo博客网站github发布</a>
-              </p>
-              <p class="item-date">
-                <time datetime="2019-06-21T16:00:00.000Z" itemprop="datePublished">2019-06-22</time>
-              </p>
-            </div>
-          </li>
-          
-          <li>
-            
-            <div class="item-inner">
-              <p class="item-category">
-                <a class="category-link" href="/categories/ssh/">ssh</a>
-              </p>
-              <p class="item-title">
-                <a href="/article-2019062301.html" class="title">生成新的SSH密钥并将其添加到ssh-agent</a>
-              </p>
-              <p class="item-date">
-                <time datetime="2019-06-21T16:00:00.000Z" itemprop="datePublished">2019-06-22</time>
-              </p>
-            </div>
-          </li>
-          
-      </ul>
-    </div>
-  </div>
-  
-
-    
-  </div>
-</aside>
-
-   -->
-  
-<main class="main" role="main">
-  <div class="content">
-  <article id="post-sshkey" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
-    
-    <div class="article-header">
-      
-        
-  
-    <h1 class="article-title" itemprop="name">
-      生成新的SSH密钥并将其添加到ssh-agent
-    </h1>
-  
-
-      
-      <div class="article-meta">
-        <span class="article-date">
-    <i class="icon icon-calendar-check"></i>
-	<a href="/article-2019062301.html" class="article-date">
-	  <time datetime="2019-06-21T16:00:00.000Z" itemprop="datePublished">2019-06-22</time>
-	</a>
-</span>
-        
-  <span class="article-category">
-    <i class="icon icon-folder"></i>
-    <a class="article-category-link" href="/categories/ssh/">ssh</a>
-  </span>
-
-        
-  <span class="article-tag">
-    <i class="icon icon-tags"></i>
-	<a class="article-tag-link" href="/tags/ssh/">ssh</a>
-  </span>
-
-
-        
-	<span class="article-read hidden-xs">
-	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
-	    <span id="busuanzi_container_page_pv">
-			<span id="busuanzi_value_page_pv">0</span>
-		</span>
-	</span>
-
-
-        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/article-2019062301.html#comments" class="article-comment-link">评论</a></span>
-        
-	
-		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 607(字)</span>
-	
-	
-		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 2(分)</span>
-	
-
-      </div>
-    </div>
-    <div class="article-entry marked-body" itemprop="articleBody">
-      
-        <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1. 检查现有SSH密钥后，可以生成用于身份验证的新SSH密钥，然后将其添加到ssh-agent。</span><br><span class="line"></span><br><span class="line">2. 如果您还没有SSH密钥，则必须生成新的SSH密钥。 如果您不确定是否已有SSH密钥，请检查现有密钥。</span><br><span class="line"></span><br><span class="line">3. 如果您不想在每次使用SSH密钥时重新输入密码，则可以将密钥添加到SSH代理，SSH代理管理您的SSH密钥并记住您的密码。</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1. 检查现有SSH密钥后，可以生成用于身份验证的新SSH密钥，然后将其添加到ssh-agent。</span><br><span class="line"></span><br><span class="line">2. 如果您还没有SSH密钥，则必须生成新的SSH密钥。 如果您不确定是否已有SSH密钥，请检查现有密钥。</span><br><span class="line"></span><br><span class="line">3. 如果您不想在每次使用SSH密钥时重新输入密码，则可以将密钥添加到SSH代理，SSH代理管理您的SSH密钥并记住您的密码。</span><br></pre></td></tr></table></figure>
 
 <h3 id="生成新的SSH密钥"><a href="#生成新的SSH密钥" class="headerlink" title="生成新的SSH密钥"></a>生成新的SSH密钥</h3><h5 id="1-打开终端"><a href="#1-打开终端" class="headerlink" title="1. 打开终端"></a>1. 打开终端</h5><h5 id="2-粘贴下面的文本，替换您的GitHub电子邮件地址。"><a href="#2-粘贴下面的文本，替换您的GitHub电子邮件地址。" class="headerlink" title="2. 粘贴下面的文本，替换您的GitHub电子邮件地址。"></a>2. 粘贴下面的文本，替换您的GitHub电子邮件地址。</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh-keygen -t rsa -b 4096 -C“your_email@example.com”</span><br></pre></td></tr></table></figure>
 
@@ -390,167 +263,253 @@
 <p>注意：-K选项是Apple的ssh-add标准版本，当你向ssh-agent添加ssh密钥时，它会将密码链存储在你的钥匙串中。如果你没有安装Apple的标准版本，则可能会收到错误消息。</p>
 </blockquote>
 <h5 id="4-将SSH密钥添加到您的GitHub帐户。-不会的看下一篇文章"><a href="#4-将SSH密钥添加到您的GitHub帐户。-不会的看下一篇文章" class="headerlink" title="4. 将SSH密钥添加到您的GitHub帐户。(不会的看下一篇文章)"></a>4. 将SSH密钥添加到您的GitHub帐户。(不会的看下一篇文章)</h5>
-      
+            
+
+        </div>
     </div>
-    <div class="article-footer">
-      <blockquote class="mt-2x">
-  <ul class="post-copyright list-unstyled">
-    
-    <li class="post-copyright-link hidden-xs">
-      <strong>本文链接：</strong>
-      <a href="https://www.sugen.cn/article-2019062301.html" title="生成新的SSH密钥并将其添加到ssh-agent" target="_blank" rel="external">https://www.sugen.cn/article-2019062301.html</a>
-    </li>
-    
-    <!-- <li class="post-copyright-license">
-      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
-    </li> -->
-  </ul>
-</blockquote>
-
-
-<div class="panel panel-default panel-badger">
-  <div class="panel-body">
-    <figure class="media">
-      <div class="media-left">
-        <a href="https://www.sugen.cn" target="_blank" class="img-burn thumb-sm visible-lg">
-          <img src="/images/avatar.png" class="img-rounded w-full" alt="">
-        </a>
-      </div>
-      <div class="media-body">
-        <h3 class="media-heading"><a href="https://www.sugen.cn" target="_blank"><span class="text-dark">似水年华</span><small class="ml-1x">Those years, those things</small></a></h3>
-        <div>华灯一城梦，明月百年心</div>
-      </div>
-    </figure>
-  </div>
-</div>
-
-
-    </div>
-  </article>
-  
-    
-  <section id="comments">
-  	
-           
-    
-  </section>
-
-
-  
-</div>
-
-  <nav class="bar bar-footer clearfix" data-stick-bottom>
-  <div class="bar-inner">
-  
-  <ul class="pager pull-left">
-    
-    <li class="prev">
-      <a href="/article-20190622.html" title="一台电脑多个Hexo博客网站github发布"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
-    </li>
-    
-    
-    
-  </ul>
-  
-  
-  
-  <div class="bar-right">
-    
-  </div>
-  </div>
-</nav>
-  
-
-
-</main>
-
-  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
-	
-	
-    <ul class="social-links">
-    	
-        <li><a href="https://github.com/sugen" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+    <div id="post-footer" class="post-footer main-content-wrap">
         
-        <li><a href="http://weibo.com/sugen" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">标签</span><br/>
+                
+    <a class="tag tag--primary tag--small t-link" href="/tags/ssh/">ssh</a>
+
+            </div>
         
-        <li><a href="https://www.facebook.com/steven.gen.su" target="_blank" title="Facebook" data-toggle=tooltip data-placement=top><i class="icon icon-facebook"></i></a></li>
         
-        <li><a href="https://www.behance.net/sugen" target="_blank" title="Behance" data-toggle=tooltip data-placement=top><i class="icon icon-behance"></i></a></li>
+            <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/article-20190622.html" data-tooltip="一台电脑多个Hexo博客网站github发布" aria-label="上一篇: 一台电脑多个Hexo博客网站github发布">
+                
+                    <i class="fa fa-angle-left" aria-hidden="true"></i>
+                    <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/article-2019062211.html" data-tooltip="怎么将SSH密钥添加到GitHub帐户" aria-label="下一篇: 怎么将SSH密钥添加到GitHub帐户">
+                
+                    <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                    <i class="fa fa-angle-right" aria-hidden="true"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions" aria-label="Diesen Beitrag teilen">
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
         
-        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+            
+            
+            <li class="post-action hide-xs">
+                <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://www.sugen.cn/article-2019062301.html" title="分享到 Facebook">
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
         
+            
+            
+            <li class="post-action hide-xs">
+                <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://www.sugen.cn/article-2019062301.html" title="分享到 Twitter">
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https://www.sugen.cn/article-2019062301.html" title="分享到 Google+">
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Nach oben">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
     </ul>
+</div>
 
-    <div class="copyright">
-    	
-        &copy; 2019 Steven Su
+
         
-        <!-- <div class="publishby">
-        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
-        </div> -->
+        
     </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <span class="copyrights">
+        Copyrights &copy; 2019 Steven Su. All Rights Reserved.
+    </span>
 </footer>
-  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
-<script>
-window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
-</script>
-<script src="/js/plugin.min.js"></script>
-<script src="/js/application.js"></script>
 
-    <script>
-(function (window) {
-    var INSIGHT_CONFIG = {
-        TRANSLATION: {
-            POSTS: '文章',
-            PAGES: '页面',
-            CATEGORIES: '分类',
-            TAGS: '标签',
-            UNTITLED: '(未命名)',
-        },
-        ROOT_URL: '/',
-        CONTENT_URL: '/content.json',
-    };
-    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
-})(window);
-</script>
-<script src="/js/insight.js"></script>
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="2">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/article-20190622.html" data-tooltip="一台电脑多个Hexo博客网站github发布" aria-label="上一篇: 一台电脑多个Hexo博客网站github发布">
+                
+                    <i class="fa fa-angle-left" aria-hidden="true"></i>
+                    <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/article-2019062211.html" data-tooltip="怎么将SSH密钥添加到GitHub帐户" aria-label="下一篇: 怎么将SSH密钥添加到GitHub帐户">
+                
+                    <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                    <i class="fa fa-angle-right" aria-hidden="true"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions" aria-label="Diesen Beitrag teilen">
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://www.sugen.cn/article-2019062301.html" title="分享到 Facebook">
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://www.sugen.cn/article-2019062301.html" title="分享到 Twitter">
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https://www.sugen.cn/article-2019062301.html" title="分享到 Google+">
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Nach oben">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
 
 
+                </div>
+                
+    <div id="share-options-bar" class="share-options-bar" data-behavior="2">
+        <i id="btn-close-shareoptions" class="fa fa-times"></i>
+        <ul class="share-options">
+            
+                
+                
+                <li class="share-option">
+                    <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://www.sugen.cn/article-2019062301.html">
+                        <i class="fab fa-facebook" aria-hidden="true"></i><span>分享到 Facebook</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=https://www.sugen.cn/article-2019062301.html">
+                        <i class="fab fa-twitter" aria-hidden="true"></i><span>分享到 Twitter</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=https://www.sugen.cn/article-2019062301.html">
+                        <i class="fab fa-google-plus" aria-hidden="true"></i><span>分享到 Google+</span>
+                    </a>
+                </li>
+            
+        </ul>
+    </div>
 
 
-
-   
-<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-
-
+            
+        </div>
+        
 
 
-
-   
     
-  <!-- <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"> -->
-  <script src="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/blueimp-md5@2.10.0/js/md5.min.js"></script>
-  <script type="text/javascript">
-  var gitalk = new Gitalk({
-    clientID: 'abcdbe766ad1feeea932',
-    clientSecret: '9192c96f2c7466cafc661e07f4a2827f53f17019',
-    repo: 'comments',
-    owner: 'sugen',
-    admin: ['sugen'],
-    id: md5(location.pathname),
-    distractionFreeMode: true
-  })
-  gitalk.render('comments')
-  </script>
+        
+    
 
-      
+<div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-times"></i>
+        </div>
+        
+            <img id="about-card-picture" src="/assets/images/logo/logo.png" alt="作者的图片"/>
+        
+            <h4 id="about-card-name">Steven Su</h4>
+        
+            <div id="about-card-bio"><p>author.bio</p>
+</div>
+        
+        
+            <div id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                <p>author.job</p>
+
+            </div>
+        
+        
+            <div id="about-card-location">
+                <i class="fa fa-map-marker-alt"></i>
+                <br/>
+                Shanghai
+            </div>
+        
+    </div>
+</div>
+
+        
+        
+<div id="cover" style="background-image:url('/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
+<script src="/assets/js/jquery.js"></script>
+<script src="/assets/js/jquery.fancybox.js"></script>
+<script src="/assets/js/thumbs.js"></script>
+<script src="/assets/js/tranquilpeak.js"></script>
+<!--SCRIPTS END-->
 
 
 
-
-
-
-
-</body>
+    </body>
 </html>

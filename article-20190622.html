@@ -1,374 +1,243 @@
+
 <!DOCTYPE html>
-<html lang=zh>
-<head><meta name="generator" content="Hexo 3.9.0">
-  <meta charset="utf-8">
-  
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
-  <meta name="renderer" content="webkit">
-  <meta http-equiv="Cache-Control" content="no-transform">
-  <meta http-equiv="Cache-Control" content="no-siteapp">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="format-detection" content="telephone=no,email=no,adress=no">
-  <!-- Color theme for statusbar -->
-  <meta name="theme-color" content="#000000">
-  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
-  <meta http-equiv="window-target" content="_top">
-  
-  
-  <title>一台电脑多个Hexo博客网站github发布 | 似水年华</title>
-  <meta name="description" content="Git 最著名报错 “ERROR: Permission to XXX.git denied to user”终极解决方案今天在弄Hexo自动发布到github的时候，遇到了点小麻烦，总结了一下，终于找到解决方案！报错如下： 123ERROR: Permission to sugen/sugen.github.io.git denied to biancard.fatal: Could not r">
-<meta name="keywords" content="github,hexo">
-<meta property="og:type" content="article">
+<html lang="zh-cn">
+    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="似水年华">
+    <title>一台电脑多个Hexo博客网站github发布 - 似水年华</title>
+    <meta name="author" content="Steven Su">
+    
+        <meta name="keywords" content="ssh">
+    
+    
+        <link rel="icon" href="https://www.sugen.cn/assets/images/favicon.png">
+    
+    
+        <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
+    
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Steven Su","sameAs":[],"image":"/logo/logo.png"},"articleBody":"Git 最著名报错 “ERROR: Permission to XXX.git denied to user”终极解决方案\n今天在弄Hexo自动发布到github的时候，遇到了点小麻烦，总结了一下，终于找到解决方案！报错如下：\n123ERROR: Permission to sugen/sugen.github.io.git denied to biancard.fatal: Could not read from remote repository.Please make sure you have the correct access rights and the repository exists.\n\n初看知道大概是没有权限，导致不能从远程仓库读取，电脑SSH公钥已经绑定了一个GitHub账号，我就不能再用他的公钥了，具体的请看stackoverflow网友所说的：\n123GitHub will use the key as means to identify you when you connect to them via SSH. As such, you cannot have multiple accounts with the same key, as GitHub won’t be able to tell then which of your accounts you want to use.\n\n上面说的话很清楚，就是你不能有多个账号添加了同一个公钥，一旦那样github就不能区分到底是哪个用户在安全登陆网站，那安全登录就起不到任何效果了，因为你能登进去，我也能登进去，那服务器到底判断是谁登了呢！但是要注意一个账号可以拥有多个公钥，这个是可以允许的！比如，在A电脑和B电脑上的公钥都绑定了同个一个账户Steven，那么两台电脑在终端上输入ssh -T git@github.com最后都会显示\n12$ ssh -T git@github.comHi Steven! You've successfully authenticated, but GitHub does not provide shell access.\n\n解决办法一台电脑生成多公钥，每个公钥对应一个github仓库\n解决方案1、生成一个新的SSH KEY1$ ssh-keygen -t rsa -b 4096 -C \"your_email@example.com\"\n\n使用电子邮件作为标签创建一个新的ssh密钥。\n1&gt; Generating public/private rsa key pair.\n\n当提示“输入文件以保存密钥”时，记得为新的key重新命名。 这接受默认文件位置。\n12&gt; Enter a file in which to save the key (/Users/you/.ssh/id_rsa): [Press enter]&gt; /Users/you/.ssh/github_rsa\n\n在提示符下，键入安全密码(建议不要设置，直接回车)。\n12&gt; Enter passphrase (empty for no passphrase): [Type a passphrase]&gt; Enter same passphrase again: [Type passphrase again]\n\n2、将SSH密钥添加到ssh-agent在将新的SSH密钥添加到ssh-agent以管理密钥之前，您应该检查现有的SSH密钥并生成新的SSH密钥。 将SSH密钥添加到代理时，请使用默认的macOS ssh-add命令，而不是macports，homebrew或其他外部源安装的应用程序。\n1, 在后台启动ssh-agent。\n12$ eval \"$(ssh-agent -s)\"&gt; Agent pid 59566\n\n将SSH私钥添加到ssh-agent并将密码存储在密钥链中。 如果使用其他名称创建密钥，或者要添加具有不同名称的现有密钥，请将命令中的github_rsa替换为私钥文件的名称。\n1$ ssh-add -K ~/.ssh/github_rsa\n\n编辑修改〜/.ssh/config，没有config文件则vi编辑后保存会自动创建，或者终端输入touch config，创建完以后用vi打开或者是在Finder打开一样。在不影响默认的github设置下我们重新添加一个Host，建一个自己能辨识的github别名，我取的是github-rsa，新建的帐号使用这个别名做克隆和更新\n1$ vi 〜/.ssh/config\n\n加上如下一段代码\n1234Host github-rsa.comHostName github.comUser gitIdentityFile ~/.ssh/github_rsa\n\n编辑完毕之后按下ESC，:x，:x是保存并退出vi编辑器用cat 〜/.ssh/config 查看刚刚编辑的文件，具体在终端代码如下：\n1$ cat 〜/.ssh/config\n\n123456789Host github.comHostName github.comUser gitIdentityFile ~/.ssh/id_rsaHost github-rsa.comHostName github.comUser gitIdentityFile ~/.ssh/github_rsa\n\n3、将github_rsa.pub密钥添加到您的GitHub帐户, 不知道怎么加，请看我上一条博客4、将GitHub SSH仓库地址中的git@github.com替换成新建的Host别名。如原地址是 git@github.com:sugen/comments.git 替换后应该是：git@github-rsa.com:sugen/comments.git 或者github-rsa:sugen/comments.git 都是可以的，如果是新建的仓库，直接使用替换后的URL克隆即可。如果已经使用原地址克隆过了，可以使用命令修改：进入到GITHUB仓库目录下\n1$ cd /Users/steven/Project/sugen.cn\n\n修改之前\n1234$ git remote -v&gt; github  git@github.com:sugen/comments.git (fetch)&gt; github  git@github.com:sugen/comments.git (push)\n\n修改 remote set-url\n1$ git remote set-url github  git@github-rsa.com:sugen/comments.git\n\n验证是否修改成功，使用修改后的github-rsa SSH连接，连接成功用户是sugen，此时公钥是github_rsa\n12$ ssh -T github-rsa&gt; Hi sugen! You've successfully authenticated, but GitHub does not provide shell access.\n\n使用默认的git@github.com SSH去连接,连接成功用户是steven，此时公钥是id_rsa\n12$ ssh -T git@github.com&gt; Hi steven! You've successfully authenticated, but GitHub does not provide shell access.\n\n至此github可以正常使用了，这样，一台电脑生成的两个公钥让两个用户成功连接，也就可以访问别人的远程仓库，可以进行多人开发了！！\n","dateCreated":"2019-06-22T00:00:00+08:00","dateModified":"2019-06-23T23:00:43+08:00","datePublished":"2019-06-22T00:00:00+08:00","description":"Git 最著名报错 “ERROR: Permission to XXX.git denied to user”终极解决方案","headline":"一台电脑多个Hexo博客网站github发布","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"https://www.sugen.cn/article-20190622.html"},"publisher":{"@type":"Organization","name":"Steven Su","sameAs":[],"image":"/logo/logo.png","logo":{"@type":"ImageObject","url":"/logo/logo.png"}},"url":"https://www.sugen.cn/article-20190622.html","keywords":"hexo, github"}</script>
+    <meta name="description" content="Git 最著名报错 “ERROR: Permission to XXX.git denied to user”终极解决方案">
+<meta name="keywords" content="ssh">
+<meta property="og:type" content="blog">
 <meta property="og:title" content="一台电脑多个Hexo博客网站github发布">
 <meta property="og:url" content="https://www.sugen.cn/article-20190622.html">
 <meta property="og:site_name" content="似水年华">
-<meta property="og:description" content="Git 最著名报错 “ERROR: Permission to XXX.git denied to user”终极解决方案今天在弄Hexo自动发布到github的时候，遇到了点小麻烦，总结了一下，终于找到解决方案！报错如下： 123ERROR: Permission to sugen/sugen.github.io.git denied to biancard.fatal: Could not r">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-06-23T05:33:39.173Z">
+<meta property="og:description" content="Git 最著名报错 “ERROR: Permission to XXX.git denied to user”终极解决方案">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:updated_time" content="2019-06-23T15:00:43.891Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="一台电脑多个Hexo博客网站github发布">
-<meta name="twitter:description" content="Git 最著名报错 “ERROR: Permission to XXX.git denied to user”终极解决方案今天在弄Hexo自动发布到github的时候，遇到了点小麻烦，总结了一下，终于找到解决方案！报错如下： 123ERROR: Permission to sugen/sugen.github.io.git denied to biancard.fatal: Could not r">
-  <!-- Canonical links -->
-  <link rel="canonical" href="https://www.sugen.cn/article-20190622.html">
-  
-    <link rel="alternate" href="/atom.xml" title="似水年华" type="application/atom+xml">
-  
-  
-    <!-- <link rel="icon" href="/favicon.ico" type="image/x-icon"> -->
-    <link rel="shortcut icon" type="image/x-icon" href="https://www.sugen.cn/favicon.png" media="screen">
-  
-  <link rel="stylesheet" href="/css/style.css">
-  
-  
-  
-  
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.css">
-  
+<meta name="twitter:description" content="Git 最著名报错 “ERROR: Permission to XXX.git denied to user”终极解决方案">
+    
+    
+        
+    
+    
+        <meta property="og:image" content="https://www.sugen.cn/assets/images/logo/logo.png"/>
+    
+    
+    
+    
+    <!--STYLES-->
+    <link rel="stylesheet" href="/assets/css/all.css">
+    <link rel="stylesheet" href="/assets/css/jquery.fancybox.css">
+    <link rel="stylesheet" href="/assets/css/thumbs.css">
+    <link rel="stylesheet" href="/assets/css/tranquilpeak.css">
+    <!--STYLES END-->
+    
+
+    
 </head>
 
+    <body>
+        <div id="blog">
+            <!-- Define author's picture -->
 
-<body class="main-center no-sidebar" itemscope itemtype="http://schema.org/WebPage">
-  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
-  <div class="slimContent">
-    <div class="navbar-header">
-      
-      
-      <div class="profile-block text-center">
-        <a id="avatar" href="https://www.sugen.cn" target="_blank">
-          <img class="img-circle img-rotate" src="/images/avatar.png" width="200" height="200">
+
+    
+        
+            
+        
+    
+
+<header id="header" data-behavior="2">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a class="header-title-link" href="/ ">似水年华</a>
+    </div>
+    
+        
+            <a  class="header-right-picture "
+                href="#about">
+        
+        
+            <img class="header-picture" src="/assets/images/logo/logo.png" alt="作者的图片"/>
+        
         </a>
-        <h2 id="name" class="hidden-xs hidden-sm">似水年华</h2>
-        <h3 id="title" class="hidden-xs hidden-sm hidden-md">Those years, those things</h3>
-        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Shanghai, China</small>
-      </div>
-      
-      <div class="search" id="search-form-wrap">
-
-    <form class="search-form sidebar-form">
-        <div class="input-group">
-            <input type="text" class="search-form-input form-control" placeholder="搜索" />
-            <span class="input-group-btn">
-                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
-            </span>
-        </div>
-    </form>
-    <div class="ins-search">
-  <div class="ins-search-mask"></div>
-  <div class="ins-search-container">
-    <div class="ins-input-wrapper">
-      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
-      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-    </div>
-    <div class="ins-section-wrapper">
-      <div class="ins-section-container"></div>
-    </div>
-  </div>
-</div>
-
-
-</div>
-      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-    </div>
-    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
-      <ul class="nav navbar-nav main-nav ">
-        
-        
-        <li class="menu-item menu-item-home">
-          <a href="/.">
-            
-            <i class="icon icon-home-fill"></i>
-            
-            <span class="menu-title">首页</span>
-          </a>
-        </li>
-        
-        
-        <li class="menu-item menu-item-archives">
-          <a href="/archives">
-            
-            <i class="icon icon-archives-fill"></i>
-            
-            <span class="menu-title">归档</span>
-          </a>
-        </li>
-        
-        
-        <li class="menu-item menu-item-categories">
-          <a href="/categories">
-            
-            <i class="icon icon-folder"></i>
-            
-            <span class="menu-title">分类</span>
-          </a>
-        </li>
-        
-        
-        <li class="menu-item menu-item-tags">
-          <a href="/tags">
-            
-            <i class="icon icon-tags"></i>
-            
-            <span class="menu-title">标签</span>
-          </a>
-        </li>
-        
-        
-        <li class="menu-item menu-item-links">
-          <a href="/links">
-            
-            <i class="icon icon-friendship"></i>
-            
-            <span class="menu-title">友链</span>
-          </a>
-        </li>
-        
-        
-        <li class="menu-item menu-item-about">
-          <a href="/about">
-            
-            <i class="icon icon-cup-fill"></i>
-            
-            <span class="menu-title">关于</span>
-          </a>
-        </li>
-        
-      </ul>
-      
-	
-    <ul class="social-links">
-    	
-        <li><a href="https://github.com/sugen" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
-        
-        <li><a href="http://weibo.com/sugen" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
-        
-        <li><a href="https://www.facebook.com/steven.gen.su" target="_blank" title="Facebook" data-toggle=tooltip data-placement=top><i class="icon icon-facebook"></i></a></li>
-        
-        <li><a href="https://www.behance.net/sugen" target="_blank" title="Behance" data-toggle=tooltip data-placement=top><i class="icon icon-behance"></i></a></li>
-        
-        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
-        
-    </ul>
-
-    </nav>
-  </div>
+    
 </header>
 
-  <!-- 
-    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
-  <div class="slimContent">
+            <!-- Define author's picture -->
+
+
+
+        
     
-      <div class="widget">
-    <h3 class="widget-title">公告</h3>
-    <div class="widget-body">
-        <div id="board">
-            <div class="content">
-                <p>欢迎交流与分享经验!</p>
+
+<nav id="sidebar" data-behavior="2">
+    <div class="sidebar-container">
+        
+            <div class="sidebar-profile">
+                <a href="/#about">
+                    <img class="sidebar-profile-picture" src="/assets/images/logo/logo.png" alt="作者的图片"/>
+                </a>
+                <h4 class="sidebar-profile-name">Steven Su</h4>
+                
+                    <h5 class="sidebar-profile-bio"><p>author.bio</p>
+</h5>
+                
             </div>
-        </div>
+        
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link "
+                             href="/ "
+                            
+                            title="首页"
+                        >
+                    
+                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">首页</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link "
+                             href="/all-categories"
+                            
+                            title="分类"
+                        >
+                    
+                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">分类</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link "
+                             href="/all-tags"
+                            
+                            title="标签"
+                        >
+                    
+                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">标签</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link "
+                             href="/all-archives"
+                            
+                            title="归档"
+                        >
+                    
+                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">归档</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link open-algolia-search"
+                             href="#search"
+                            
+                            title="搜索"
+                        >
+                    
+                        <i class="sidebar-button-icon fa fa-search" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">搜索</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link "
+                             href="/about"
+                            
+                            title="关于"
+                        >
+                    
+                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">关于</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link "
+                             href="/mailto"
+                            title="邮箱"
+                        >
+                    
+                        <i class="sidebar-button-icon fa fa-envelope" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">邮箱</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link "
+                             href="/atom.xml"
+                            
+                            title="RSS"
+                        >
+                    
+                        <i class="sidebar-button-icon fa fa-rss" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">RSS</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
     </div>
+</nav>
+
+            
+            <div id="main" data-behavior="2"
+                 class="
+                        hasCoverMetaIn
+                        ">
+                
+<article class="post">
+    
+    
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title">
+            一台电脑多个Hexo博客网站github发布
+        </h1>
+    
+    
 </div>
 
     
-      
-  <div class="widget">
-    <h3 class="widget-title">分类</h3>
-    <div class="widget-body">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/github/">github</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/github/ssh/">ssh</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/ssh/">ssh</a><span class="category-list-count">2</span></li></ul>
-    </div>
-  </div>
-
-
-    
-      
-  <div class="widget">
-    <h3 class="widget-title">标签</h3>
-    <div class="widget-body">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssh/">ssh</a><span class="tag-list-count">3</span></li></ul>
-    </div>
-  </div>
-
-
-    
-      
-  <div class="widget">
-    <h3 class="widget-title">标签云</h3>
-    <div class="widget-body tagcloud">
-      <a href="/tags/github/" style="font-size: 13.5px;">github</a> <a href="/tags/hexo/" style="font-size: 13px;">hexo</a> <a href="/tags/ssh/" style="font-size: 14px;">ssh</a>
-    </div>
-  </div>
-
-    
-      
-  <div class="widget">
-    <h3 class="widget-title">归档</h3>
-    <div class="widget-body">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">4</span></li></ul>
-    </div>
-  </div>
-
-
-    
-      
-  <div class="widget">
-    <h3 class="widget-title">最新文章</h3>
-    <div class="widget-body">
-      <ul class="recent-post-list list-unstyled no-thumbnail">
-        
-          <li>
-            
-            <div class="item-inner">
-              <p class="item-category">
-                <a class="category-link" href="/categories/ssh/">ssh</a>
-              </p>
-              <p class="item-title">
-                <a href="/article-20190623120958.html" class="title">SSH协议远程免密登录</a>
-              </p>
-              <p class="item-date">
-                <time datetime="2019-06-23T04:09:58.000Z" itemprop="datePublished">2019-06-23</time>
-              </p>
-            </div>
-          </li>
-          
-          <li>
-            
-            <div class="item-inner">
-              <p class="item-category">
-                <a class="category-link" href="/categories/github/">github</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/github/ssh/">ssh</a>
-              </p>
-              <p class="item-title">
-                <a href="/article-2019062211.html" class="title">怎么将SSH密钥添加到GitHub帐户</a>
-              </p>
-              <p class="item-date">
-                <time datetime="2019-06-21T16:00:00.000Z" itemprop="datePublished">2019-06-22</time>
-              </p>
-            </div>
-          </li>
-          
-          <li>
-            
-            <div class="item-inner">
-              <p class="item-category">
-                <a class="category-link" href="/categories/github/">github</a>
-              </p>
-              <p class="item-title">
-                <a href="/article-20190622.html" class="title">一台电脑多个Hexo博客网站github发布</a>
-              </p>
-              <p class="item-date">
-                <time datetime="2019-06-21T16:00:00.000Z" itemprop="datePublished">2019-06-22</time>
-              </p>
-            </div>
-          </li>
-          
-          <li>
-            
-            <div class="item-inner">
-              <p class="item-category">
-                <a class="category-link" href="/categories/ssh/">ssh</a>
-              </p>
-              <p class="item-title">
-                <a href="/article-2019062301.html" class="title">生成新的SSH密钥并将其添加到ssh-agent</a>
-              </p>
-              <p class="item-date">
-                <time datetime="2019-06-21T16:00:00.000Z" itemprop="datePublished">2019-06-22</time>
-              </p>
-            </div>
-          </li>
-          
-      </ul>
-    </div>
-  </div>
-  
-
-    
-  </div>
-</aside>
-
-   -->
-  
-<main class="main" role="main">
-  <div class="content">
-  <article id="post-blog" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
-    
-    <div class="article-header">
-      
-        
-  
-    <h1 class="article-title" itemprop="name">
-      一台电脑多个Hexo博客网站github发布
-    </h1>
-  
-
-      
-      <div class="article-meta">
-        <span class="article-date">
-    <i class="icon icon-calendar-check"></i>
-	<a href="/article-20190622.html" class="article-date">
-	  <time datetime="2019-06-21T16:00:00.000Z" itemprop="datePublished">2019-06-22</time>
-	</a>
-</span>
-        
-  <span class="article-category">
-    <i class="icon icon-folder"></i>
-    <a class="article-category-link" href="/categories/github/">github</a>
-  </span>
-
-        
-  <span class="article-tag">
-    <i class="icon icon-tags"></i>
-	<a class="article-tag-link" href="/tags/github/">github</a>, <a class="article-tag-link" href="/tags/hexo/">hexo</a>
-  </span>
-
-
-        
-	<span class="article-read hidden-xs">
-	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
-	    <span id="busuanzi_container_page_pv">
-			<span id="busuanzi_value_page_pv">0</span>
-		</span>
-	</span>
-
-
-        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/article-20190622.html#comments" class="article-comment-link">评论</a></span>
-        
-	
-		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 1.2k(字)</span>
-	
-	
-		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 5(分)</span>
-	
-
-      </div>
-    </div>
-    <div class="article-entry marked-body" itemprop="articleBody">
-      
-        <h2 id="Git-最著名报错-“ERROR-Permission-to-XXX-git-denied-to-user”终极解决方案"><a href="#Git-最著名报错-“ERROR-Permission-to-XXX-git-denied-to-user”终极解决方案" class="headerlink" title="Git 最著名报错 “ERROR: Permission to XXX.git denied to user”终极解决方案"></a>Git 最著名报错 “ERROR: Permission to XXX.git denied to user”终极解决方案</h2><p>今天在弄Hexo自动发布到github的时候，遇到了点小麻烦，总结了一下，终于找到解决方案！报错如下：</p>
+    <div class="post-content markdown">
+        <div class="main-content-wrap">
+            <h2 id="Git-最著名报错-“ERROR-Permission-to-XXX-git-denied-to-user”终极解决方案"><a href="#Git-最著名报错-“ERROR-Permission-to-XXX-git-denied-to-user”终极解决方案" class="headerlink" title="Git 最著名报错 “ERROR: Permission to XXX.git denied to user”终极解决方案"></a>Git 最著名报错 “ERROR: Permission to XXX.git denied to user”终极解决方案</h2><a id="more"></a>
+<p>今天在弄Hexo自动发布到github的时候，遇到了点小麻烦，总结了一下，终于找到解决方案！报错如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ERROR: Permission to sugen/sugen.github.io.git denied to biancard.</span><br><span class="line">fatal: Could not <span class="built_in">read</span> from remote repository.</span><br><span class="line">Please make sure you have the correct access rights and the repository exists.</span><br></pre></td></tr></table></figure>
 
 <p>初看知道大概是没有权限，导致不能从远程仓库读取，电脑SSH公钥已经绑定了一个GitHub账号，我就不能再用他的公钥了，具体的请看stackoverflow网友所说的：</p>
@@ -424,171 +293,253 @@
 
 <p>至此github可以正常使用了，这样，一台电脑生成的两个公钥让两个用户成功连接，也就可以访问别人的远程仓库，可以进行多人开发了！！</p>
 <!-- ![彼岸点卡](/images/logo-document.png "彼岸点卡") -->
-      
+            
+
+        </div>
     </div>
-    <div class="article-footer">
-      <blockquote class="mt-2x">
-  <ul class="post-copyright list-unstyled">
-    
-    <li class="post-copyright-link hidden-xs">
-      <strong>本文链接：</strong>
-      <a href="https://www.sugen.cn/article-20190622.html" title="一台电脑多个Hexo博客网站github发布" target="_blank" rel="external">https://www.sugen.cn/article-20190622.html</a>
-    </li>
-    
-    <!-- <li class="post-copyright-license">
-      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
-    </li> -->
-  </ul>
-</blockquote>
-
-
-<div class="panel panel-default panel-badger">
-  <div class="panel-body">
-    <figure class="media">
-      <div class="media-left">
-        <a href="https://www.sugen.cn" target="_blank" class="img-burn thumb-sm visible-lg">
-          <img src="/images/avatar.png" class="img-rounded w-full" alt="">
-        </a>
-      </div>
-      <div class="media-body">
-        <h3 class="media-heading"><a href="https://www.sugen.cn" target="_blank"><span class="text-dark">似水年华</span><small class="ml-1x">Those years, those things</small></a></h3>
-        <div>华灯一城梦，明月百年心</div>
-      </div>
-    </figure>
-  </div>
-</div>
-
-
-    </div>
-  </article>
-  
-    
-  <section id="comments">
-  	
-           
-    
-  </section>
-
-
-  
-</div>
-
-  <nav class="bar bar-footer clearfix" data-stick-bottom>
-  <div class="bar-inner">
-  
-  <ul class="pager pull-left">
-    
-    <li class="prev">
-      <a href="/article-2019062211.html" title="怎么将SSH密钥添加到GitHub帐户"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
-    </li>
-    
-    
-    <li class="next">
-      <a href="/article-2019062301.html" title="生成新的SSH密钥并将其添加到ssh-agent"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
-    </li>
-    
-    
-  </ul>
-  
-  
-  
-  <div class="bar-right">
-    
-  </div>
-  </div>
-</nav>
-  
-
-
-</main>
-
-  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
-	
-	
-    <ul class="social-links">
-    	
-        <li><a href="https://github.com/sugen" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+    <div id="post-footer" class="post-footer main-content-wrap">
         
-        <li><a href="http://weibo.com/sugen" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">标签</span><br/>
+                
+    <a class="tag tag--primary tag--small t-link" href="/tags/github/">github</a> <a class="tag tag--primary tag--small t-link" href="/tags/hexo/">hexo</a>
+
+            </div>
         
-        <li><a href="https://www.facebook.com/steven.gen.su" target="_blank" title="Facebook" data-toggle=tooltip data-placement=top><i class="icon icon-facebook"></i></a></li>
         
-        <li><a href="https://www.behance.net/sugen" target="_blank" title="Behance" data-toggle=tooltip data-placement=top><i class="icon icon-behance"></i></a></li>
+            <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/article-20190623120958.html" data-tooltip="SSH协议远程免密登录" aria-label="上一篇: SSH协议远程免密登录">
+                
+                    <i class="fa fa-angle-left" aria-hidden="true"></i>
+                    <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/article-2019062301.html" data-tooltip="生成新的SSH密钥并将其添加到ssh-agent" aria-label="下一篇: 生成新的SSH密钥并将其添加到ssh-agent">
+                
+                    <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                    <i class="fa fa-angle-right" aria-hidden="true"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions" aria-label="Diesen Beitrag teilen">
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
         
-        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+            
+            
+            <li class="post-action hide-xs">
+                <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://www.sugen.cn/article-20190622.html" title="分享到 Facebook">
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
         
+            
+            
+            <li class="post-action hide-xs">
+                <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://www.sugen.cn/article-20190622.html" title="分享到 Twitter">
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https://www.sugen.cn/article-20190622.html" title="分享到 Google+">
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Nach oben">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
     </ul>
+</div>
 
-    <div class="copyright">
-    	
-        &copy; 2019 Steven Su
+
         
-        <!-- <div class="publishby">
-        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
-        </div> -->
+        
     </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <span class="copyrights">
+        Copyrights &copy; 2019 Steven Su. All Rights Reserved.
+    </span>
 </footer>
-  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
-<script>
-window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
-</script>
-<script src="/js/plugin.min.js"></script>
-<script src="/js/application.js"></script>
 
-    <script>
-(function (window) {
-    var INSIGHT_CONFIG = {
-        TRANSLATION: {
-            POSTS: '文章',
-            PAGES: '页面',
-            CATEGORIES: '分类',
-            TAGS: '标签',
-            UNTITLED: '(未命名)',
-        },
-        ROOT_URL: '/',
-        CONTENT_URL: '/content.json',
-    };
-    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
-})(window);
-</script>
-<script src="/js/insight.js"></script>
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="2">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/article-20190623120958.html" data-tooltip="SSH协议远程免密登录" aria-label="上一篇: SSH协议远程免密登录">
+                
+                    <i class="fa fa-angle-left" aria-hidden="true"></i>
+                    <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/article-2019062301.html" data-tooltip="生成新的SSH密钥并将其添加到ssh-agent" aria-label="下一篇: 生成新的SSH密钥并将其添加到ssh-agent">
+                
+                    <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                    <i class="fa fa-angle-right" aria-hidden="true"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions" aria-label="Diesen Beitrag teilen">
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://www.sugen.cn/article-20190622.html" title="分享到 Facebook">
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://www.sugen.cn/article-20190622.html" title="分享到 Twitter">
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https://www.sugen.cn/article-20190622.html" title="分享到 Google+">
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Nach oben">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
 
 
+                </div>
+                
+    <div id="share-options-bar" class="share-options-bar" data-behavior="2">
+        <i id="btn-close-shareoptions" class="fa fa-times"></i>
+        <ul class="share-options">
+            
+                
+                
+                <li class="share-option">
+                    <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://www.sugen.cn/article-20190622.html">
+                        <i class="fab fa-facebook" aria-hidden="true"></i><span>分享到 Facebook</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=https://www.sugen.cn/article-20190622.html">
+                        <i class="fab fa-twitter" aria-hidden="true"></i><span>分享到 Twitter</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=https://www.sugen.cn/article-20190622.html">
+                        <i class="fab fa-google-plus" aria-hidden="true"></i><span>分享到 Google+</span>
+                    </a>
+                </li>
+            
+        </ul>
+    </div>
 
 
-
-   
-<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-
-
+            
+        </div>
+        
 
 
-
-   
     
-  <!-- <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"> -->
-  <script src="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/blueimp-md5@2.10.0/js/md5.min.js"></script>
-  <script type="text/javascript">
-  var gitalk = new Gitalk({
-    clientID: 'abcdbe766ad1feeea932',
-    clientSecret: '9192c96f2c7466cafc661e07f4a2827f53f17019',
-    repo: 'comments',
-    owner: 'sugen',
-    admin: ['sugen'],
-    id: md5(location.pathname),
-    distractionFreeMode: true
-  })
-  gitalk.render('comments')
-  </script>
+        
+    
 
-      
+<div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-times"></i>
+        </div>
+        
+            <img id="about-card-picture" src="/assets/images/logo/logo.png" alt="作者的图片"/>
+        
+            <h4 id="about-card-name">Steven Su</h4>
+        
+            <div id="about-card-bio"><p>author.bio</p>
+</div>
+        
+        
+            <div id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                <p>author.job</p>
+
+            </div>
+        
+        
+            <div id="about-card-location">
+                <i class="fa fa-map-marker-alt"></i>
+                <br/>
+                Shanghai
+            </div>
+        
+    </div>
+</div>
+
+        
+        
+<div id="cover" style="background-image:url('/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
+<script src="/assets/js/jquery.js"></script>
+<script src="/assets/js/jquery.fancybox.js"></script>
+<script src="/assets/js/thumbs.js"></script>
+<script src="/assets/js/tranquilpeak.js"></script>
+<!--SCRIPTS END-->
 
 
 
-
-
-
-
-</body>
+    </body>
 </html>
