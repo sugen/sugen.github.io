@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000">
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top">
+  
+  
+  <title>SSH协议远程免密登录 | 似水年华</title>
+  <meta name="description" content="一、什么是SSH？  简单说，SSH是一种网络协议，用于计算机之间的加密登录。  如果一个用户从本地计算机，使用SSH协议登录另一台远程计算机，我们就可以认为，这种登录是安全的，即使被中途截获，密码也不会泄露。  最早的时候，互联网通信都是明文通信，一旦被截获，内容就暴露无疑。1995年，芬兰学者Tatu Ylonen设计了SSH协议，将登录信息全部加密，成为互联网安全的一个基本解决方案，迅速在全">
+<meta name="keywords" content="ssh">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SSH协议远程免密登录">
+<meta property="og:url" content="https://www.sugen.cn/article-20190623120958.html">
+<meta property="og:site_name" content="似水年华">
+<meta property="og:description" content="一、什么是SSH？  简单说，SSH是一种网络协议，用于计算机之间的加密登录。  如果一个用户从本地计算机，使用SSH协议登录另一台远程计算机，我们就可以认为，这种登录是安全的，即使被中途截获，密码也不会泄露。  最早的时候，互联网通信都是明文通信，一旦被截获，内容就暴露无疑。1995年，芬兰学者Tatu Ylonen设计了SSH协议，将登录信息全部加密，成为互联网安全的一个基本解决方案，迅速在全">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-06-23T04:55:04.601Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SSH协议远程免密登录">
+<meta name="twitter:description" content="一、什么是SSH？  简单说，SSH是一种网络协议，用于计算机之间的加密登录。  如果一个用户从本地计算机，使用SSH协议登录另一台远程计算机，我们就可以认为，这种登录是安全的，即使被中途截获，密码也不会泄露。  最早的时候，互联网通信都是明文通信，一旦被截获，内容就暴露无疑。1995年，芬兰学者Tatu Ylonen设计了SSH协议，将登录信息全部加密，成为互联网安全的一个基本解决方案，迅速在全">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://www.sugen.cn/article-20190623120958.html">
+  
+    <link rel="alternate" href="/atom.xml" title="似水年华" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  
+  
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.css">
+  
+</head>
+
+
+<body class="main-center" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://www.sugen.cn" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.png" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">似水年华</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">Those years, those things</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Shanghai, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/sugen" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://weibo.com/sugen" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="https://www.facebook.com/steven.gen.su" target="_blank" title="Facebook" data-toggle=tooltip data-placement=top><i class="icon icon-facebook"></i></a></li>
+        
+        <li><a href="https://www.behance.net/sugen" target="_blank" title="Behance" data-toggle=tooltip data-placement=top><i class="icon icon-behance"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/github/">github</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/github/ssh/">ssh</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/ssh/">ssh</a><span class="category-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssh/">ssh</a><span class="tag-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/github/" style="font-size: 13.5px;">github</a> <a href="/tags/hexo/" style="font-size: 13px;">hexo</a> <a href="/tags/ssh/" style="font-size: 14px;">ssh</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/ssh/">ssh</a>
+              </p>
+              <p class="item-title">
+                <a href="/article-20190623120958.html" class="title">SSH协议远程免密登录</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-06-23T04:09:58.000Z" itemprop="datePublished">2019-06-23</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/github/">github</a>
+              </p>
+              <p class="item-title">
+                <a href="/article-20190622.html" class="title">一台电脑多个Hexo博客网站github发布</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-06-21T16:00:00.000Z" itemprop="datePublished">2019-06-22</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/github/">github</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/github/ssh/">ssh</a>
+              </p>
+              <p class="item-title">
+                <a href="/article-2019062211.html" class="title">怎么将SSH密钥添加到GitHub帐户</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-06-21T16:00:00.000Z" itemprop="datePublished">2019-06-22</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/ssh/">ssh</a>
+              </p>
+              <p class="item-title">
+                <a href="/article-2019062301.html" class="title">生成新的SSH密钥并将其添加到ssh-agent</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-06-21T16:00:00.000Z" itemprop="datePublished">2019-06-22</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-sshlogin" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      SSH协议远程免密登录
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/article-20190623120958.html" class="article-date">
+	  <time datetime="2019-06-23T04:09:58.000Z" itemprop="datePublished">2019-06-23</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/ssh/">ssh</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/ssh/">ssh</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/article-20190623120958.html#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 1.9k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 7(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h3 id="一、什么是SSH？"><a href="#一、什么是SSH？" class="headerlink" title="一、什么是SSH？"></a>一、什么是SSH？</h3><hr>
+<ol>
+<li><p>简单说，SSH是一种网络协议，用于计算机之间的加密登录。</p>
+</li>
+<li><p>如果一个用户从本地计算机，使用SSH协议登录另一台远程计算机，我们就可以认为，这种登录是安全的，即使被中途截获，密码也不会泄露。</p>
+</li>
+<li><p>最早的时候，互联网通信都是明文通信，一旦被截获，内容就暴露无疑。1995年，芬兰学者Tatu Ylonen设计了SSH协议，将登录信息全部加密，成为互联网安全的一个基本解决方案，迅速在全世界获得推广，目前已经成为Linux系统的标准配置。</p>
+</li>
+<li><p>需要指出的是，SSH只是一种协议，存在多种实现，既有商业实现，也有开源实现。本文针对的实现是OpenSSH，它是自由软件，应用非常广泛。</p>
+</li>
+<li><p>此外，本文只讨论SSH在Linux Shell中的用法。如果要在Windows系统中使用SSH，会用到另一种软件PuTTY，这需要另文介绍。</p>
+</li>
+</ol>
+<hr>
+<h3 id="二、最基本的用法"><a href="#二、最基本的用法" class="headerlink" title="二、最基本的用法"></a>二、最基本的用法</h3><h5 id="SSH主要用于远程登录。假定你要以用户名user，登录远程主机host，只要一条简单命令就可以了。"><a href="#SSH主要用于远程登录。假定你要以用户名user，登录远程主机host，只要一条简单命令就可以了。" class="headerlink" title="SSH主要用于远程登录。假定你要以用户名user，登录远程主机host，只要一条简单命令就可以了。"></a>SSH主要用于远程登录。假定你要以用户名user，登录远程主机host，只要一条简单命令就可以了。</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh root@43.82.79.168</span><br></pre></td></tr></table></figure>
+
+<h5 id="如果本地用户名与远程用户名一致，登录时可以省略用户名。"><a href="#如果本地用户名与远程用户名一致，登录时可以省略用户名。" class="headerlink" title="如果本地用户名与远程用户名一致，登录时可以省略用户名。"></a>如果本地用户名与远程用户名一致，登录时可以省略用户名。</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh 43.82.79.168</span><br></pre></td></tr></table></figure>
+
+<h5 id="SSH的默认端口是22，也就是说，你的登录请求会送进远程主机的22端口。使用p参数，可以修改这个端口。"><a href="#SSH的默认端口是22，也就是说，你的登录请求会送进远程主机的22端口。使用p参数，可以修改这个端口。" class="headerlink" title="SSH的默认端口是22，也就是说，你的登录请求会送进远程主机的22端口。使用p参数，可以修改这个端口。"></a>SSH的默认端口是22，也就是说，你的登录请求会送进远程主机的22端口。使用p参数，可以修改这个端口。</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh -p 2222 root@43.82.79.168</span><br></pre></td></tr></table></figure>
+
+<h5 id="上面这条命令表示，ssh直接连接远程主机的2222端口。"><a href="#上面这条命令表示，ssh直接连接远程主机的2222端口。" class="headerlink" title="上面这条命令表示，ssh直接连接远程主机的2222端口。"></a>上面这条命令表示，ssh直接连接远程主机的2222端口。</h5><h3 id="三、中间人攻击"><a href="#三、中间人攻击" class="headerlink" title="三、中间人攻击"></a>三、中间人攻击</h3><ol>
+<li><p>SSH之所以能够保证安全，原因在于它采用了公钥加密。</p>
+</li>
+<li><p>整个过程是这样的：（1）远程主机收到用户的登录请求，把自己的公钥发给用户。（2）用户使用这个公钥，将登录密码加密后，发送回来。（3）远程主机用自己的私钥，解密登录密码，如果密码正确，就同意用户登录。</p>
+</li>
+<li><p>这个过程本身是安全的，但是实施的时候存在一个风险：如果有人截获了登录请求，然后冒充远程主机，将伪造的公钥发给用户，那么用户很难辨别真伪。因为不像https协议，SSH协议的公钥是没有证书中心（CA）公证的，也就是说，都是自己签发的。</p>
+</li>
+<li><p>可以设想，如果攻击者插在用户与远程主机之间（比如在公共的wifi区域），用伪造的公钥，获取用户的登录密码。再用这个密码登录远程主机，那么SSH的安全机制就荡然无存了。这种风险就是著名的”中间人攻击”（Man-in-the-middle attack）。</p>
+</li>
+<li><p>SSH协议是如何应对的呢？</p>
+</li>
+</ol>
+<h3 id="四、口令登录"><a href="#四、口令登录" class="headerlink" title="四、口令登录"></a>四、口令登录</h3><h5 id="如果你是第一次登录对方主机，系统会出现下面的提示："><a href="#如果你是第一次登录对方主机，系统会出现下面的提示：" class="headerlink" title="如果你是第一次登录对方主机，系统会出现下面的提示："></a>如果你是第一次登录对方主机，系统会出现下面的提示：</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ ssh root@43.82.79.168</span><br><span class="line"></span><br><span class="line">&gt; The authenticity of host <span class="string">'host (12.18.429.21)'</span> can<span class="string">'t be established.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">&gt; RSA key fingerprint is 98:2e:d7:e0:de:9f:ac:67:28:c2:42:2d:37:16:58:4d.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">&gt; Are you sure you want to continue connecting (yes/no)?</span></span><br></pre></td></tr></table></figure>
+
+<p>这段话的意思是，无法确认host主机的真实性，只知道它的公钥指纹，问你还想继续连接吗？</p>
+<p>所谓”公钥指纹”，是指公钥长度较长（这里采用RSA算法，长达1024位），很难比对，所以对其进行MD5计算，将它变成一个128位的指纹。上例中是98:2e:d7:e0:de:9f:ac:67:28:c2:42:2d:37:16:58:4d，再进行比较，就容易多了。</p>
+<p>很自然的一个问题就是，用户怎么知道远程主机的公钥指纹应该是多少？回答是没有好办法，远程主机必须在自己的网站上贴出公钥指纹，以便用户自行核对。</p>
+<p>假定经过风险衡量以后，用户决定接受这个远程主机的公钥。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt; Are you sure you want to <span class="built_in">continue</span> connecting (yes/no)? yes</span><br></pre></td></tr></table></figure>
+
+<h5 id="系统会出现一句提示，表示43-82-79-168主机已经得到认可。"><a href="#系统会出现一句提示，表示43-82-79-168主机已经得到认可。" class="headerlink" title="系统会出现一句提示，表示43.82.79.168主机已经得到认可。"></a>系统会出现一句提示，表示43.82.79.168主机已经得到认可。</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt; Warning: Permanently added <span class="string">'host,12.18.429.21'</span> (RSA) to the list of known hosts.</span><br></pre></td></tr></table></figure>
+
+<h5 id="然后，会要求输入密码。"><a href="#然后，会要求输入密码。" class="headerlink" title="然后，会要求输入密码。"></a>然后，会要求输入密码。</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt; Password: (enter password)</span><br></pre></td></tr></table></figure>
+
+<h5 id="如果密码正确，就可以登录了。"><a href="#如果密码正确，就可以登录了。" class="headerlink" title="如果密码正确，就可以登录了。"></a>如果密码正确，就可以登录了。</h5><p>当远程主机的公钥被接受以后，它就会被保存在文件$HOME/.ssh/known_hosts之中。下次再连接这台主机，系统就会认出它的公钥已经保存在本地了，从而跳过警告部分，直接提示输入密码。</p>
+<p>每个SSH用户都有自己的known_hosts文件，此外系统也有一个这样的文件，通常是/etc/ssh/ssh_known_hosts，保存一些对所有用户都可信赖的远程主机的公钥。</p>
+<h3 id="五、公钥登录"><a href="#五、公钥登录" class="headerlink" title="五、公钥登录"></a>五、公钥登录</h3><ol>
+<li><p>使用密码登录，每次都必须输入密码，非常麻烦。好在SSH还提供了公钥登录，可以省去输入密码的步骤。</p>
+</li>
+<li><p>所谓”公钥登录”，原理很简单，就是用户将自己的公钥储存在远程主机上。登录的时候，远程主机会向用户发送一段随机字符串，用户用自己的私钥加密后，再发回来。远程主机用事先储存的公钥进行解密，如果成功，就证明用户是可信的，直接允许登录shell，不再要求密码。</p>
+</li>
+<li><p>这种方法要求用户必须提供自己的公钥。如果没有现成的，可以直接用ssh-keygen生成一个（在我以前的文章中有详细步骤）：</p>
+</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh-keygen</span><br></pre></td></tr></table></figure>
+
+<p>运行上面的命令以后，系统会出现一系列提示，可以一路回车。其中有一个问题是，要不要对私钥设置口令（passphrase），如果担心私钥的安全，这里可以设置一个。</p>
+<p>运行结束以后，在$HOME/.ssh/目录下，会新生成两个文件：id_rsa.pub和id_rsa。前者是你的公钥，后者是你的私钥。</p>
+<p>这时再输入下面的命令，将公钥传送到远程主机host上面：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh-copy-id root@43.82.79.168</span><br></pre></td></tr></table></figure>
+
+<p>好了，从此你再登录，就不需要输入密码了。</p>
+<p>如果还是不行，就打开远程主机的/etc/ssh/sshd_config这个文件，检查下面几行前面”#”注释是否取掉。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">RSAAuthentication yes</span><br><span class="line">PubkeyAuthentication yes</span><br><span class="line">AuthorizedKeysFile .ssh/authorized_keys</span><br></pre></td></tr></table></figure>
+
+<p>然后，重启远程主机的ssh服务。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// ubuntu系统</span><br><span class="line">$ service ssh restart</span><br><span class="line"></span><br><span class="line">// debian系统</span><br><span class="line">$ /etc/init.d/ssh restart</span><br></pre></td></tr></table></figure>
+
+<h3 id="六、authorized-keys文件"><a href="#六、authorized-keys文件" class="headerlink" title="六、authorized_keys文件"></a>六、authorized_keys文件</h3><p>远程主机将用户的公钥，保存在登录后的用户主目录的$HOME/.ssh/authorized_keys文件中。公钥就是一段字符串，只要把它追加在authorized_keys文件的末尾就行了。</p>
+<p>这里不使用上面的ssh-copy-id命令，改用下面的命令，解释公钥的保存过程：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh root@43.82.79.168 <span class="string">'mkdir -p .ssh &amp;&amp; cat &gt;&gt; .ssh/authorized_keys'</span> &lt; ~/.ssh/id_rsa.pub</span><br></pre></td></tr></table></figure>
+
+<p>这条命令由多个语句组成，依次分解开来看：（1）”$ ssh <a href="mailto:root@43.82.79.168" target="_blank" rel="noopener">root@43.82.79.168</a>“，表示登录远程主机；（2）单引号中的mkdir .ssh &amp;&amp; cat &gt;&gt; .ssh/authorized_keys，表示登录后在远程shell上执行的命令：（3）”$ mkdir -p .ssh”的作用是，如果用户主目录中的.ssh目录不存在，就创建一个；（4）’cat &gt;&gt; .ssh/authorized_keys’ &lt; ~/.ssh/id_rsa.pub的作用是，将本地的公钥文件 ~/.ssh/id_rsa.pub，重定向追加到远程文件authorized_keys的末尾。</p>
+<p>写入authorized_keys文件后，公钥登录的设置就完成了。</p>
+<p>如果还有问题看一下，为〜/.ssh目录和authorized_keys文件提供文件权限：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod 700 ~/.ssh &amp;&amp; chmod 600 ~/.ssh/authorized_keys</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://www.sugen.cn/article-20190623120958.html" title="SSH协议远程免密登录" target="_blank" rel="external">https://www.sugen.cn/article-20190623120958.html</a>
+    </li>
+    
+    <!-- <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li> -->
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://www.sugen.cn" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.png" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://www.sugen.cn" target="_blank"><span class="text-dark">似水年华</span><small class="ml-1x">Those years, those things</small></a></h3>
+        <div>华灯一城梦，明月百年心</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+           
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    
+    <li class="next">
+      <a href="/article-20190622.html" title="一台电脑多个Hexo博客网站github发布"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/sugen" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://weibo.com/sugen" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="https://www.facebook.com/steven.gen.su" target="_blank" title="Facebook" data-toggle=tooltip data-placement=top><i class="icon icon-facebook"></i></a></li>
+        
+        <li><a href="https://www.behance.net/sugen" target="_blank" title="Behance" data-toggle=tooltip data-placement=top><i class="icon icon-behance"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2019 Steven Su
+        
+        <!-- <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div> -->
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="/js/plugin.min.js"></script>
+<script src="/js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+  <!-- <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"> -->
+  <script src="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/blueimp-md5@2.10.0/js/md5.min.js"></script>
+  <script type="text/javascript">
+  var gitalk = new Gitalk({
+    clientID: 'abcdbe766ad1feeea932',
+    clientSecret: '9192c96f2c7466cafc661e07f4a2827f53f17019',
+    repo: 'comments',
+    owner: 'sugen',
+    admin: ['sugen'],
+    id: md5(location.pathname),
+    distractionFreeMode: true
+  })
+  gitalk.render('comments')
+  </script>
+
+      
+
+
+
+
+
+
+
+</body>
+</html>
