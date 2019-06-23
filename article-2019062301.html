@@ -17,19 +17,19 @@
     
         <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
     
-    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Steven Su","sameAs":[],"image":"/logo/logo.png"},"articleBody":"\n检查现有SSH密钥后，可以生成用于身份验证的新SSH密钥，然后将其添加到ssh-agent。\n\n\n\n123451. 检查现有SSH密钥后，可以生成用于身份验证的新SSH密钥，然后将其添加到ssh-agent。2. 如果您还没有SSH密钥，则必须生成新的SSH密钥。 如果您不确定是否已有SSH密钥，请检查现有密钥。3. 如果您不想在每次使用SSH密钥时重新输入密码，则可以将密钥添加到SSH代理，SSH代理管理您的SSH密钥并记住您的密码。\n\n生成新的SSH密钥1. 打开终端2. 粘贴下面的文本，替换您的GitHub电子邮件地址。1$ ssh-keygen -t rsa -b 4096 -C“your_email@example.com”\n\n这将使用提供的电子邮件作为标签创建一个新的ssh密钥。1&gt; Generating public/private rsa key pair.\n\n3. 当系统提示“输入要保存密钥的文件”时，按Enter键。这接受默认文件位置，如果不想覆盖，可以手动修改文件名。1&gt; Enter a file in which to save the key (/Users/you/.ssh/id_rsa): [Press enter]\n\n4. 在提示符下，键入安全密码(可以直接回车不设置密码)。12&gt; Enter passphrase (empty for no passphrase): [Type a passphrase]&gt; Enter same passphrase again: [Type passphrase again]\n\n将SSH密钥添加到ssh-agent121. 在将新的SSH密钥添加到ssh-agent以管理密钥之前，您应该检查现有的SSH密钥并生成新的SSH密钥。2. 将SSH密钥添加到代理时，请使用默认的macOS ssh-add命令，而不是macports，homebrew或其他外部源安装的应用程序。\n\n1. 在后台启动ssh-agent。12$ eval \"$(ssh-agent -s)\"&gt; Agent pid 59566\n\n2. 如果您使用的是macOS Sierra 10.12.2或更高版本，则需要修改〜/.ssh/config文件以自动将密钥加载到ssh-agent中并在密钥链中存储密码。1234Host *  AddKeysToAgent yes  UseKeychain yes  IdentityFile ~/.ssh/id_rsa\n\n3. 将SSH私钥添加到ssh-agent并将密码存储在密钥链中。 如果使用其他名称创建密钥，或者要添加具有不同名称的现有密钥，请将命令中的id_rsa替换为私钥文件的名称。1$ ssh-add -K ~/.ssh/id_rsa\n\n\n注意：-K选项是Apple的ssh-add标准版本，当你向ssh-agent添加ssh密钥时，它会将密码链存储在你的钥匙串中。如果你没有安装Apple的标准版本，则可能会收到错误消息。\n\n4. 将SSH密钥添加到您的GitHub帐户。(不会的看下一篇文章)","dateCreated":"2019-06-22T00:00:00+08:00","dateModified":"2019-06-23T23:26:50+08:00","datePublished":"2019-06-22T00:00:00+08:00","description":"\n检查现有SSH密钥后，可以生成用于身份验证的新SSH密钥，然后将其添加到ssh-agent。","headline":"生成新的SSH密钥并将其添加到ssh-agent","image":["https://www.sugen.cn/images/blog/newssh.png"],"mainEntityOfPage":{"@type":"WebPage","@id":"https://www.sugen.cn/article-2019062301.html"},"publisher":{"@type":"Organization","name":"Steven Su","sameAs":[],"image":"/logo/logo.png","logo":{"@type":"ImageObject","url":"/logo/logo.png"}},"url":"https://www.sugen.cn/article-2019062301.html","keywords":"ssh","thumbnailUrl":"https://www.sugen.cn/images/blog/newssh.png"}</script>
-    <meta name="description" content="检查现有SSH密钥后，可以生成用于身份验证的新SSH密钥，然后将其添加到ssh-agent。">
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Steven Su","sameAs":[],"image":"/logo/logo.png"},"articleBody":"使用SSH协议，您可以连接和验证远程服务器和服务。您可以连接到GitHub，而无需在每次访问时提供用户名或密码，接下来教您怎么使用SSH密钥。\n\n\n开始之前123451. 检查现有SSH密钥后，可以生成用于身份验证的新SSH密钥，然后将其添加到ssh-agent。2. 如果您还没有SSH密钥，则必须生成新的SSH密钥。 如果您不确定是否已有SSH密钥，请检查现有密钥。3. 如果您不想在每次使用SSH密钥时重新输入密码，则可以将密钥添加到SSH代理，SSH代理管理您的SSH密钥并记住您的密码。\n\n生成新的SSH密钥1. 打开终端2. 粘贴下面的文本，替换您的GitHub电子邮件地址。1$ ssh-keygen -t rsa -b 4096 -C“your_email@example.com”\n\n这将使用提供的电子邮件作为标签创建一个新的ssh密钥。1&gt; Generating public/private rsa key pair.\n\n3. 当系统提示“输入要保存密钥的文件”时，按Enter键。这接受默认文件位置，如果不想覆盖，可以手动修改文件名。1&gt; Enter a file in which to save the key (/Users/you/.ssh/id_rsa): [Press enter]\n\n4. 在提示符下，键入安全密码(可以直接回车不设置密码)。12&gt; Enter passphrase (empty for no passphrase): [Type a passphrase]&gt; Enter same passphrase again: [Type passphrase again]\n\n将SSH密钥添加到ssh-agent121. 在将新的SSH密钥添加到ssh-agent以管理密钥之前，您应该检查现有的SSH密钥并生成新的SSH密钥。2. 将SSH密钥添加到代理时，请使用默认的macOS ssh-add命令，而不是macports，homebrew或其他外部源安装的应用程序。\n\n1. 在后台启动ssh-agent。12$ eval \"$(ssh-agent -s)\"&gt; Agent pid 59566\n\n2. 如果您使用的是macOS Sierra 10.12.2或更高版本，则需要修改〜/.ssh/config文件以自动将密钥加载到ssh-agent中并在密钥链中存储密码。1234Host *  AddKeysToAgent yes  UseKeychain yes  IdentityFile ~/.ssh/id_rsa\n\n3. 将SSH私钥添加到ssh-agent并将密码存储在密钥链中。 如果使用其他名称创建密钥，或者要添加具有不同名称的现有密钥，请将命令中的id_rsa替换为私钥文件的名称。1$ ssh-add -K ~/.ssh/id_rsa\n\n\n注意：-K选项是Apple的ssh-add标准版本，当你向ssh-agent添加ssh密钥时，它会将密码链存储在你的钥匙串中。如果你没有安装Apple的标准版本，则可能会收到错误消息。\n\n4. 将SSH密钥添加到您的GitHub帐户。(不会的看下一篇文章)","dateCreated":"2019-06-22T00:00:00+08:00","dateModified":"2019-06-23T23:44:05+08:00","datePublished":"2019-06-22T00:00:00+08:00","description":"使用SSH协议，您可以连接和验证远程服务器和服务。您可以连接到GitHub，而无需在每次访问时提供用户名或密码，接下来教您怎么使用SSH密钥。","headline":"生成新的SSH密钥并将其添加到ssh-agent","image":["https://www.sugen.cn/images/blog/newssh.png"],"mainEntityOfPage":{"@type":"WebPage","@id":"https://www.sugen.cn/article-2019062301.html"},"publisher":{"@type":"Organization","name":"Steven Su","sameAs":[],"image":"/logo/logo.png","logo":{"@type":"ImageObject","url":"/logo/logo.png"}},"url":"https://www.sugen.cn/article-2019062301.html","keywords":"ssh","thumbnailUrl":"https://www.sugen.cn/images/blog/newssh.png"}</script>
+    <meta name="description" content="使用SSH协议，您可以连接和验证远程服务器和服务。您可以连接到GitHub，而无需在每次访问时提供用户名或密码，接下来教您怎么使用SSH密钥。">
 <meta name="keywords" content="ssh">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="生成新的SSH密钥并将其添加到ssh-agent">
 <meta property="og:url" content="https://www.sugen.cn/article-2019062301.html">
 <meta property="og:site_name" content="似水年华">
-<meta property="og:description" content="检查现有SSH密钥后，可以生成用于身份验证的新SSH密钥，然后将其添加到ssh-agent。">
+<meta property="og:description" content="使用SSH协议，您可以连接和验证远程服务器和服务。您可以连接到GitHub，而无需在每次访问时提供用户名或密码，接下来教您怎么使用SSH密钥。">
 <meta property="og:locale" content="zh-cn">
-<meta property="og:updated_time" content="2019-06-23T15:26:50.905Z">
+<meta property="og:updated_time" content="2019-06-23T15:44:05.765Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="生成新的SSH密钥并将其添加到ssh-agent">
-<meta name="twitter:description" content="检查现有SSH密钥后，可以生成用于身份验证的新SSH密钥，然后将其添加到ssh-agent。">
+<meta name="twitter:description" content="使用SSH协议，您可以连接和验证远程服务器和服务。您可以连接到GitHub，而无需在每次访问时提供用户名或密码，接下来教您怎么使用SSH密钥。">
     
     
         
@@ -239,12 +239,10 @@
     
     <div class="post-content markdown">
         <div class="main-content-wrap">
-            <ol>
-<li>检查现有SSH密钥后，可以生成用于身份验证的新SSH密钥，然后将其添加到ssh-agent。<a id="more"></a>
+            <p>使用SSH协议，您可以连接和验证远程服务器和服务。您可以连接到GitHub，而无需在每次访问时提供用户名或密码，接下来教您怎么使用SSH密钥。</p>
+<a id="more"></a>
 
-</li>
-</ol>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1. 检查现有SSH密钥后，可以生成用于身份验证的新SSH密钥，然后将其添加到ssh-agent。</span><br><span class="line"></span><br><span class="line">2. 如果您还没有SSH密钥，则必须生成新的SSH密钥。 如果您不确定是否已有SSH密钥，请检查现有密钥。</span><br><span class="line"></span><br><span class="line">3. 如果您不想在每次使用SSH密钥时重新输入密码，则可以将密钥添加到SSH代理，SSH代理管理您的SSH密钥并记住您的密码。</span><br></pre></td></tr></table></figure>
+<h3 id="开始之前"><a href="#开始之前" class="headerlink" title="开始之前"></a>开始之前</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1. 检查现有SSH密钥后，可以生成用于身份验证的新SSH密钥，然后将其添加到ssh-agent。</span><br><span class="line"></span><br><span class="line">2. 如果您还没有SSH密钥，则必须生成新的SSH密钥。 如果您不确定是否已有SSH密钥，请检查现有密钥。</span><br><span class="line"></span><br><span class="line">3. 如果您不想在每次使用SSH密钥时重新输入密码，则可以将密钥添加到SSH代理，SSH代理管理您的SSH密钥并记住您的密码。</span><br></pre></td></tr></table></figure>
 
 <h3 id="生成新的SSH密钥"><a href="#生成新的SSH密钥" class="headerlink" title="生成新的SSH密钥"></a>生成新的SSH密钥</h3><h5 id="1-打开终端"><a href="#1-打开终端" class="headerlink" title="1. 打开终端"></a>1. 打开终端</h5><h5 id="2-粘贴下面的文本，替换您的GitHub电子邮件地址。"><a href="#2-粘贴下面的文本，替换您的GitHub电子邮件地址。" class="headerlink" title="2. 粘贴下面的文本，替换您的GitHub电子邮件地址。"></a>2. 粘贴下面的文本，替换您的GitHub电子邮件地址。</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh-keygen -t rsa -b 4096 -C“your_email@example.com”</span><br></pre></td></tr></table></figure>
 
@@ -286,7 +284,7 @@
             <li class="post-action">
                 
                     
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/article-2019062211.html" data-tooltip="怎么将SSH密钥添加到GitHub帐户" aria-label="上一篇: 怎么将SSH密钥添加到GitHub帐户">
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/article-20190622.html" data-tooltip="一台电脑多个Hexo博客网站github发布" aria-label="上一篇: 一台电脑多个Hexo博客网站github发布">
                 
                     <i class="fa fa-angle-left" aria-hidden="true"></i>
                     <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
@@ -304,7 +302,7 @@
     </nav>
     <ul class="post-actions post-action-share">
         <li class="post-action hide-lg hide-md hide-sm">
-            <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions" aria-label="Share this post">
+            <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions" aria-label="Diesen Beitrag teilen">
                 <i class="fa fa-share-alt" aria-hidden="true"></i>
             </a>
         </li>
@@ -336,7 +334,7 @@
         
         <li class="post-action">
             
-                <a class="post-action-btn btn btn--default" href="#" aria-label="Back to top">
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Nach oben">
             
                 <i class="fa fa-list" aria-hidden="true"></i>
             </a>
@@ -367,7 +365,7 @@
             <li class="post-action">
                 
                     
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/article-2019062211.html" data-tooltip="怎么将SSH密钥添加到GitHub帐户" aria-label="上一篇: 怎么将SSH密钥添加到GitHub帐户">
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/article-20190622.html" data-tooltip="一台电脑多个Hexo博客网站github发布" aria-label="上一篇: 一台电脑多个Hexo博客网站github发布">
                 
                     <i class="fa fa-angle-left" aria-hidden="true"></i>
                     <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
@@ -385,7 +383,7 @@
     </nav>
     <ul class="post-actions post-action-share">
         <li class="post-action hide-lg hide-md hide-sm">
-            <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions" aria-label="Share this post">
+            <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions" aria-label="Diesen Beitrag teilen">
                 <i class="fa fa-share-alt" aria-hidden="true"></i>
             </a>
         </li>
@@ -417,7 +415,7 @@
         
         <li class="post-action">
             
-                <a class="post-action-btn btn btn--default" href="#" aria-label="Back to top">
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Nach oben">
             
                 <i class="fa fa-list" aria-hidden="true"></i>
             </a>

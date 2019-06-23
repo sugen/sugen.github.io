@@ -17,7 +17,7 @@
     
         <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
     
-    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Steven Su","sameAs":[],"image":"/logo/logo.png"},"articleBody":"Git 最著名报错 “ERROR: Permission to XXX.git denied to user”终极解决方案\n今天在弄Hexo自动发布到github的时候，遇到了点小麻烦，总结了一下，终于找到解决方案！报错如下：\n123ERROR: Permission to sugen/sugen.github.io.git denied to biancard.fatal: Could not read from remote repository.Please make sure you have the correct access rights and the repository exists.\n\n初看知道大概是没有权限，导致不能从远程仓库读取，电脑SSH公钥已经绑定了一个GitHub账号，我就不能再用他的公钥了，具体的请看stackoverflow网友所说的：\n123GitHub will use the key as means to identify you when you connect to them via SSH. As such, you cannot have multiple accounts with the same key, as GitHub won’t be able to tell then which of your accounts you want to use.\n\n上面说的话很清楚，就是你不能有多个账号添加了同一个公钥，一旦那样github就不能区分到底是哪个用户在安全登陆网站，那安全登录就起不到任何效果了，因为你能登进去，我也能登进去，那服务器到底判断是谁登了呢！但是要注意一个账号可以拥有多个公钥，这个是可以允许的！比如，在A电脑和B电脑上的公钥都绑定了同个一个账户Steven，那么两台电脑在终端上输入ssh -T git@github.com最后都会显示\n12$ ssh -T git@github.comHi Steven! You've successfully authenticated, but GitHub does not provide shell access.\n\n解决办法一台电脑生成多公钥，每个公钥对应一个github仓库\n解决方案1、生成一个新的SSH KEY1$ ssh-keygen -t rsa -b 4096 -C \"your_email@example.com\"\n\n使用电子邮件作为标签创建一个新的ssh密钥。\n1&gt; Generating public/private rsa key pair.\n\n当提示“输入文件以保存密钥”时，记得为新的key重新命名。 这接受默认文件位置。\n12&gt; Enter a file in which to save the key (/Users/you/.ssh/id_rsa): [Press enter]&gt; /Users/you/.ssh/github_rsa\n\n在提示符下，键入安全密码(建议不要设置，直接回车)。\n12&gt; Enter passphrase (empty for no passphrase): [Type a passphrase]&gt; Enter same passphrase again: [Type passphrase again]\n\n2、将SSH密钥添加到ssh-agent在将新的SSH密钥添加到ssh-agent以管理密钥之前，您应该检查现有的SSH密钥并生成新的SSH密钥。 将SSH密钥添加到代理时，请使用默认的macOS ssh-add命令，而不是macports，homebrew或其他外部源安装的应用程序。\n1, 在后台启动ssh-agent。\n12$ eval \"$(ssh-agent -s)\"&gt; Agent pid 59566\n\n将SSH私钥添加到ssh-agent并将密码存储在密钥链中。 如果使用其他名称创建密钥，或者要添加具有不同名称的现有密钥，请将命令中的github_rsa替换为私钥文件的名称。\n1$ ssh-add -K ~/.ssh/github_rsa\n\n编辑修改〜/.ssh/config，没有config文件则vi编辑后保存会自动创建，或者终端输入touch config，创建完以后用vi打开或者是在Finder打开一样。在不影响默认的github设置下我们重新添加一个Host，建一个自己能辨识的github别名，我取的是github-rsa，新建的帐号使用这个别名做克隆和更新\n1$ vi 〜/.ssh/config\n\n加上如下一段代码\n1234Host github-rsa.comHostName github.comUser gitIdentityFile ~/.ssh/github_rsa\n\n编辑完毕之后按下ESC，:x，:x是保存并退出vi编辑器用cat 〜/.ssh/config 查看刚刚编辑的文件，具体在终端代码如下：\n1$ cat 〜/.ssh/config\n\n123456789Host github.comHostName github.comUser gitIdentityFile ~/.ssh/id_rsaHost github-rsa.comHostName github.comUser gitIdentityFile ~/.ssh/github_rsa\n\n3、将github_rsa.pub密钥添加到您的GitHub帐户, 不知道怎么加，请看我上一条博客4、将GitHub SSH仓库地址中的git@github.com替换成新建的Host别名。如原地址是 git@github.com:sugen/comments.git 替换后应该是：git@github-rsa.com:sugen/comments.git 或者github-rsa:sugen/comments.git 都是可以的，如果是新建的仓库，直接使用替换后的URL克隆即可。如果已经使用原地址克隆过了，可以使用命令修改：进入到GITHUB仓库目录下\n1$ cd /Users/steven/Project/sugen.cn\n\n修改之前\n1234$ git remote -v&gt; github  git@github.com:sugen/comments.git (fetch)&gt; github  git@github.com:sugen/comments.git (push)\n\n修改 remote set-url\n1$ git remote set-url github  git@github-rsa.com:sugen/comments.git\n\n验证是否修改成功，使用修改后的github-rsa SSH连接，连接成功用户是sugen，此时公钥是github_rsa\n12$ ssh -T github-rsa&gt; Hi sugen! You've successfully authenticated, but GitHub does not provide shell access.\n\n使用默认的git@github.com SSH去连接,连接成功用户是steven，此时公钥是id_rsa\n12$ ssh -T git@github.com&gt; Hi steven! You've successfully authenticated, but GitHub does not provide shell access.\n\n至此github可以正常使用了，这样，一台电脑生成的两个公钥让两个用户成功连接，也就可以访问别人的远程仓库，可以进行多人开发了！！\n","dateCreated":"2019-06-22T00:00:00+08:00","dateModified":"2019-06-23T23:27:02+08:00","datePublished":"2019-06-22T00:00:00+08:00","description":"Git 最著名报错 “ERROR: Permission to XXX.git denied to user”终极解决方案","headline":"一台电脑多个Hexo博客网站github发布","image":["https://www.sugen.cn/images/blog/hexo.png"],"mainEntityOfPage":{"@type":"WebPage","@id":"https://www.sugen.cn/article-20190622.html"},"publisher":{"@type":"Organization","name":"Steven Su","sameAs":[],"image":"/logo/logo.png","logo":{"@type":"ImageObject","url":"/logo/logo.png"}},"url":"https://www.sugen.cn/article-20190622.html","keywords":"hexo, github","thumbnailUrl":"https://www.sugen.cn/images/blog/hexo.png"}</script>
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Steven Su","sameAs":[],"image":"/logo/logo.png"},"articleBody":"Git 最著名报错 “ERROR: Permission to XXX.git denied to user”终极解决方案\n\n今天在弄Hexo自动发布到github的时候，遇到了点小麻烦，总结了一下，终于找到解决方案！报错如下：\n123ERROR: Permission to sugen/sugen.github.io.git denied to biancard.fatal: Could not read from remote repository.Please make sure you have the correct access rights and the repository exists.\n\n初看知道大概是没有权限，导致不能从远程仓库读取，电脑SSH公钥已经绑定了一个GitHub账号，我就不能再用他的公钥了，具体的请看stackoverflow网友所说的：\n123GitHub will use the key as means to identify you when you connect to them via SSH. As such, you cannot have multiple accounts with the same key, as GitHub won’t be able to tell then which of your accounts you want to use.\n\n上面说的话很清楚，就是你不能有多个账号添加了同一个公钥，一旦那样github就不能区分到底是哪个用户在安全登陆网站，那安全登录就起不到任何效果了，因为你能登进去，我也能登进去，那服务器到底判断是谁登了呢！但是要注意一个账号可以拥有多个公钥，这个是可以允许的！比如，在A电脑和B电脑上的公钥都绑定了同个一个账户Steven，那么两台电脑在终端上输入ssh -T git@github.com最后都会显示\n12$ ssh -T git@github.comHi Steven! You've successfully authenticated, but GitHub does not provide shell access.\n\n解决办法一台电脑生成多公钥，每个公钥对应一个github仓库\n解决方案1、生成一个新的SSH KEY1$ ssh-keygen -t rsa -b 4096 -C \"your_email@example.com\"\n\n使用电子邮件作为标签创建一个新的ssh密钥。\n1&gt; Generating public/private rsa key pair.\n\n当提示“输入文件以保存密钥”时，记得为新的key重新命名。 这接受默认文件位置。\n12&gt; Enter a file in which to save the key (/Users/you/.ssh/id_rsa): [Press enter]&gt; /Users/you/.ssh/github_rsa\n\n在提示符下，键入安全密码(建议不要设置，直接回车)。\n12&gt; Enter passphrase (empty for no passphrase): [Type a passphrase]&gt; Enter same passphrase again: [Type passphrase again]\n\n2、将SSH密钥添加到ssh-agent在将新的SSH密钥添加到ssh-agent以管理密钥之前，您应该检查现有的SSH密钥并生成新的SSH密钥。 将SSH密钥添加到代理时，请使用默认的macOS ssh-add命令，而不是macports，homebrew或其他外部源安装的应用程序。\n1, 在后台启动ssh-agent。\n12$ eval \"$(ssh-agent -s)\"&gt; Agent pid 59566\n\n将SSH私钥添加到ssh-agent并将密码存储在密钥链中。 如果使用其他名称创建密钥，或者要添加具有不同名称的现有密钥，请将命令中的github_rsa替换为私钥文件的名称。\n1$ ssh-add -K ~/.ssh/github_rsa\n\n编辑修改〜/.ssh/config，没有config文件则vi编辑后保存会自动创建，或者终端输入touch config，创建完以后用vi打开或者是在Finder打开一样。在不影响默认的github设置下我们重新添加一个Host，建一个自己能辨识的github别名，我取的是github-rsa，新建的帐号使用这个别名做克隆和更新\n1$ vi 〜/.ssh/config\n\n加上如下一段代码\n1234Host github-rsa.comHostName github.comUser gitIdentityFile ~/.ssh/github_rsa\n\n编辑完毕之后按下ESC，:x，:x是保存并退出vi编辑器用cat 〜/.ssh/config 查看刚刚编辑的文件，具体在终端代码如下：\n1$ cat 〜/.ssh/config\n\n123456789Host github.comHostName github.comUser gitIdentityFile ~/.ssh/id_rsaHost github-rsa.comHostName github.comUser gitIdentityFile ~/.ssh/github_rsa\n\n3、将github_rsa.pub密钥添加到您的GitHub帐户, 不知道怎么加，请看我上一条博客4、将GitHub SSH仓库地址中的git@github.com替换成新建的Host别名。如原地址是 git@github.com:sugen/comments.git 替换后应该是：git@github-rsa.com:sugen/comments.git 或者github-rsa:sugen/comments.git 都是可以的，如果是新建的仓库，直接使用替换后的URL克隆即可。如果已经使用原地址克隆过了，可以使用命令修改：进入到GITHUB仓库目录下\n1$ cd /Users/steven/Project/sugen.cn\n\n修改之前\n1234$ git remote -v&gt; github  git@github.com:sugen/comments.git (fetch)&gt; github  git@github.com:sugen/comments.git (push)\n\n修改 remote set-url\n1$ git remote set-url github  git@github-rsa.com:sugen/comments.git\n\n验证是否修改成功，使用修改后的github-rsa SSH连接，连接成功用户是sugen，此时公钥是github_rsa\n12$ ssh -T github-rsa&gt; Hi sugen! You've successfully authenticated, but GitHub does not provide shell access.\n\n使用默认的git@github.com SSH去连接,连接成功用户是steven，此时公钥是id_rsa\n12$ ssh -T git@github.com&gt; Hi steven! You've successfully authenticated, but GitHub does not provide shell access.\n\n至此github可以正常使用了，这样，一台电脑生成的两个公钥让两个用户成功连接，也就可以访问别人的远程仓库，可以进行多人开发了！！\n","dateCreated":"2019-06-22T00:00:00+08:00","dateModified":"2019-06-23T23:45:14+08:00","datePublished":"2019-06-22T00:00:00+08:00","description":"Git 最著名报错 “ERROR: Permission to XXX.git denied to user”终极解决方案","headline":"一台电脑多个Hexo博客网站github发布","image":["https://www.sugen.cn/images/blog/hexo.png"],"mainEntityOfPage":{"@type":"WebPage","@id":"https://www.sugen.cn/article-20190622.html"},"publisher":{"@type":"Organization","name":"Steven Su","sameAs":[],"image":"/logo/logo.png","logo":{"@type":"ImageObject","url":"/logo/logo.png"}},"url":"https://www.sugen.cn/article-20190622.html","keywords":"hexo, github","thumbnailUrl":"https://www.sugen.cn/images/blog/hexo.png"}</script>
     <meta name="description" content="Git 最著名报错 “ERROR: Permission to XXX.git denied to user”终极解决方案">
 <meta name="keywords" content="ssh">
 <meta property="og:type" content="blog">
@@ -26,7 +26,7 @@
 <meta property="og:site_name" content="似水年华">
 <meta property="og:description" content="Git 最著名报错 “ERROR: Permission to XXX.git denied to user”终极解决方案">
 <meta property="og:locale" content="zh-cn">
-<meta property="og:updated_time" content="2019-06-23T15:27:02.260Z">
+<meta property="og:updated_time" content="2019-06-23T15:45:14.150Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="一台电脑多个Hexo博客网站github发布">
 <meta name="twitter:description" content="Git 最著名报错 “ERROR: Permission to XXX.git denied to user”终极解决方案">
@@ -239,7 +239,8 @@
     
     <div class="post-content markdown">
         <div class="main-content-wrap">
-            <h2 id="Git-最著名报错-“ERROR-Permission-to-XXX-git-denied-to-user”终极解决方案"><a href="#Git-最著名报错-“ERROR-Permission-to-XXX-git-denied-to-user”终极解决方案" class="headerlink" title="Git 最著名报错 “ERROR: Permission to XXX.git denied to user”终极解决方案"></a>Git 最著名报错 “ERROR: Permission to XXX.git denied to user”终极解决方案</h2><a id="more"></a>
+            <p>Git 最著名报错 “ERROR: Permission to XXX.git denied to user”终极解决方案</p>
+<a id="more"></a>
 <p>今天在弄Hexo自动发布到github的时候，遇到了点小麻烦，总结了一下，终于找到解决方案！报错如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ERROR: Permission to sugen/sugen.github.io.git denied to biancard.</span><br><span class="line">fatal: Could not <span class="built_in">read</span> from remote repository.</span><br><span class="line">Please make sure you have the correct access rights and the repository exists.</span><br></pre></td></tr></table></figure>
 
@@ -316,7 +317,7 @@
             <li class="post-action">
                 
                     
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/article-20190623120958.html" data-tooltip="SSH协议远程免密登录" aria-label="上一篇: SSH协议远程免密登录">
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/article-2019062211.html" data-tooltip="怎么将SSH密钥添加到GitHub帐户" aria-label="上一篇: 怎么将SSH密钥添加到GitHub帐户">
                 
                     <i class="fa fa-angle-left" aria-hidden="true"></i>
                     <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
@@ -325,7 +326,7 @@
             <li class="post-action">
                 
                     
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/article-2019062211.html" data-tooltip="怎么将SSH密钥添加到GitHub帐户" aria-label="下一篇: 怎么将SSH密钥添加到GitHub帐户">
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/article-2019062301.html" data-tooltip="生成新的SSH密钥并将其添加到ssh-agent" aria-label="下一篇: 生成新的SSH密钥并将其添加到ssh-agent">
                 
                     <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
                     <i class="fa fa-angle-right" aria-hidden="true"></i>
@@ -335,7 +336,7 @@
     </nav>
     <ul class="post-actions post-action-share">
         <li class="post-action hide-lg hide-md hide-sm">
-            <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions" aria-label="Share this post">
+            <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions" aria-label="Diesen Beitrag teilen">
                 <i class="fa fa-share-alt" aria-hidden="true"></i>
             </a>
         </li>
@@ -367,7 +368,7 @@
         
         <li class="post-action">
             
-                <a class="post-action-btn btn btn--default" href="#" aria-label="Back to top">
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Nach oben">
             
                 <i class="fa fa-list" aria-hidden="true"></i>
             </a>
@@ -398,7 +399,7 @@
             <li class="post-action">
                 
                     
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/article-20190623120958.html" data-tooltip="SSH协议远程免密登录" aria-label="上一篇: SSH协议远程免密登录">
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/article-2019062211.html" data-tooltip="怎么将SSH密钥添加到GitHub帐户" aria-label="上一篇: 怎么将SSH密钥添加到GitHub帐户">
                 
                     <i class="fa fa-angle-left" aria-hidden="true"></i>
                     <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
@@ -407,7 +408,7 @@
             <li class="post-action">
                 
                     
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/article-2019062211.html" data-tooltip="怎么将SSH密钥添加到GitHub帐户" aria-label="下一篇: 怎么将SSH密钥添加到GitHub帐户">
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/article-2019062301.html" data-tooltip="生成新的SSH密钥并将其添加到ssh-agent" aria-label="下一篇: 生成新的SSH密钥并将其添加到ssh-agent">
                 
                     <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
                     <i class="fa fa-angle-right" aria-hidden="true"></i>
@@ -417,7 +418,7 @@
     </nav>
     <ul class="post-actions post-action-share">
         <li class="post-action hide-lg hide-md hide-sm">
-            <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions" aria-label="Share this post">
+            <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions" aria-label="Diesen Beitrag teilen">
                 <i class="fa fa-share-alt" aria-hidden="true"></i>
             </a>
         </li>
@@ -449,7 +450,7 @@
         
         <li class="post-action">
             
-                <a class="post-action-btn btn btn--default" href="#" aria-label="Back to top">
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Nach oben">
             
                 <i class="fa fa-list" aria-hidden="true"></i>
             </a>
